@@ -1,0 +1,4 @@
+<a href="lst">Back to List</a>
+{use $task}
+<h1>{$task->name}</h1>
+ID: {$task->id}
