@@ -18,7 +18,8 @@ class BlendController
      * @access protected
      */     
     public $vars=array();
-    
+    public $components = array();
+    protected $componentObjects = array();
     public $result_code = BC_RENDER_VIEW;
     public $redirect_url = null; 
     public $redirect_status_code;
@@ -31,6 +32,22 @@ class BlendController
     {
         $this->vars=array();
         
+        //Instantiate the components and store them in an array.
+        foreach($this->components as $component)
+        {
+            $componentClass = $component . 'Component';
+            $componentObj = new $componentClass($this);
+            $this->componentObjects[$component]=$componentObj;
+        }
+    }
+    
+    public function __get($name)
+    {
+        //See if this is a registered component
+        if (isset($this->componentObjects[$name]))
+        {
+            return $this->componentObjects[$name];
+        }
     }
     
     function redirect($url, $status_code = 302)

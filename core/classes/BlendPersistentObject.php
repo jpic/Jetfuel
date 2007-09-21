@@ -17,7 +17,8 @@ class BlendPersistentObject
         
         foreach ($props as $prop)
         {
-            $propName = $prop['name'];
+            $propName = $prop->name;
+//            echo $propName;
             $result[$propName] = $this->$propName;
         }
 

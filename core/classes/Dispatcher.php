@@ -1,6 +1,7 @@
 <?php
 require_once("core/classes/BlendModule.php");
 require_once("core/classes/BlendController.php");
+require_once("core/classes/BlendComponent.php");
 
 /**
  * Dispatcher handles inbound HTTP requests and decides what 
@@ -24,7 +25,7 @@ class Dispatcher
         //and load them
         foreach ($active_modules as $module)
         {
-       // echo "<hr>$module<hr>";
+         //echo "<hr>$module<hr>";
             require_once('app/modules/' . strtolower($module) . '/' . $module . 'Module.php');
             $moduleclass=$module . 'Module';
             $this->modules[]=new $moduleclass();
@@ -98,7 +99,9 @@ class Dispatcher
     {
         $debug = ezcDebug::getInstance();
         $tplConfig = new ezcTemplateConfiguration( "app",
-                                                    "/tmp/compilation" );
+                                                    "tmp" );
+        $tplConfig->disableCache=true;
+        $tplConfig->checkModifiedTemplates=true;
         $tpl = new ezcTemplate();
         $tpl->configuration = $tplConfig;
         $send = new ezcTemplateVariableCollection($controller->vars);

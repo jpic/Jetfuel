@@ -1,5 +1,6 @@
 <?php
-require_once "ezc/Base/base.php";
+//require_once "ezc/Base/base.php";
+require_once "ezc/Base/src/base.php";
 require_once "settings/config.php";
 
 require_once "core/classes/Dispatcher.php";
