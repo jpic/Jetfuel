@@ -14,6 +14,17 @@ class BlendModule
      * @var identifier
      */ 
     public $identifier = null;
+    public $urlConfig = null;
+    
+    function __construct()
+    {
+      $urlConfig=new ezcUrlConfiguration();
+      $urlConfig->addOrderedParameter('module');
+      $urlConfig->addOrderedParameter('controller');
+      $urlConfig->addOrderedParameter('action');
+      $urlConfig->addOrderedParameter('id');
+      $this->urlConfig = $urlConfig;
+    }
 
     /** 
      * The retrieveController function evaluates the 
@@ -33,13 +44,16 @@ class BlendModule
     public function retrieveController(&$parameters)
     {
         $url=$parameters['url'];
-        list($root,$module,$controller,$action)=explode('/',$url);
+        //list($root,$module,$controller,$action)=explode('/',$url);
+        $module = $url->getParam('module');
+        $controller = $url->getParam('controller');
        // print_r(explode('/',$url));
        //     echo $path . ":$url:";        
         if($module==$this->identifier)
         {
-            $path = 'app/modules/' . $module . '/' . ucfirst($controller) . 'Controller.php';
 
+            $path = 'app/modules/' . $module . '/' . ucfirst($controller) . 'Controller.php';
+            
             require_once($path);
             $controllerName = ucfirst($controller) . 'Controller';
             $controller = new $controllerName();

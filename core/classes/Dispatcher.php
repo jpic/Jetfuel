@@ -1,7 +1,4 @@
 <?php
-require_once("core/classes/BlendModule.php");
-require_once("core/classes/BlendController.php");
-require_once("core/classes/BlendComponent.php");
 
 /**
  * Dispatcher handles inbound HTTP requests and decides what 
@@ -17,18 +14,23 @@ class Dispatcher
      * @access protected
      */
     protected $modules=array();
+    protected $urlConfigs = array();
+    protected $url;
 
     function __construct()
     {
         global $active_modules;
+        session_start();
         //Retrieve a list of active modules
         //and load them
         foreach ($active_modules as $module)
         {
          //echo "<hr>$module<hr>";
             require_once('app/modules/' . strtolower($module) . '/' . $module . 'Module.php');
-            $moduleclass=$module . 'Module';
-            $this->modules[]=new $moduleclass();
+            $moduleClass=$module . 'Module';
+            $moduleObj = new $moduleClass();
+            $this->urlConfigs[$moduleObj->identifier]=$moduleObj->urlConfig;
+            $this->modules[]=$moduleObj;
         }
     }
 
@@ -48,6 +50,7 @@ class Dispatcher
         //Run through the active modules and ask for a controller
         //to handle this request. Use the first one that gives us a 
         //controller.
+
         foreach ($this->modules as $module)
         {
             $controller = $module->retrieveController($parameters);
@@ -81,12 +84,25 @@ class Dispatcher
      */
     private function parseUrl(&$parameters)
     {
-       $parameters = array_merge($_GET, $_POST);
-       $parameters['url'] = $_SERVER['PATH_INFO'];
-       $parameters['method'] = strtolower($_SERVER['REQUEST_METHOD']);  
-       $parameters['client_ip'] = $_SERVER['REMOTE_ADDR'];
-       $parameters['client_port'] = $_SERVER['REMOTE_PORT'];
-       
+      $urlConfigRoot = new ezcUrlConfiguration();
+      $urlConfigRoot->script='index.php';
+      $urlConfigRoot->addOrderedParameter('module');
+      
+      $url=new ezcUrl($_SERVER['REQUEST_URI'], $urlConfigRoot);
+
+      $moduleIdentifier = $url->getParam('module');
+      
+      $urlConfig = $this->urlConfigs[$moduleIdentifier];
+      $url->applyConfiguration($urlConfig);
+      //var_dump($url->params);
+      
+      $parameters = array_merge($url->getQuery(), $_POST);
+      $parameters['url'] = $url;
+      $parameters['method'] = strtolower($_SERVER['REQUEST_METHOD']);  
+      $parameters['client_ip'] = $_SERVER['REMOTE_ADDR'];
+      $parameters['client_port'] = $_SERVER['REMOTE_PORT'];
+       //            var_dump($url->path);
+
     }
     
     protected function redirect($controller)
@@ -100,6 +116,9 @@ class Dispatcher
         $debug = ezcDebug::getInstance();
         $tplConfig = new ezcTemplateConfiguration( "app",
                                                     "tmp" );
+		$tplConfig->addExtension( "CustomDate" );
+		$tplConfig->addExtension( "CustomMath" );
+		$tplConfig->addExtension( "UrlCreator" );
         $tplConfig->disableCache=true;
         $tplConfig->checkModifiedTemplates=true;
         $tpl = new ezcTemplate();
@@ -108,7 +127,7 @@ class Dispatcher
         $tpl->send = $send;
         $receive = $tpl->receive;
         
-        
+        //var_dump($controller->vars);
         $result=$tpl->process($controller->templateFile);
         
         //echo $result;

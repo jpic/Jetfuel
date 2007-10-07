@@ -11,7 +11,6 @@ class BlendPersistentObject
     public function getState()
     {
         $result = array();
-        
         $clz = new ReflectionClass( get_class($this) );
         $props = $clz->getProperties();
         

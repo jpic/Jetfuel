@@ -67,11 +67,12 @@ class BlendController
         $this->parameters=$parameters;
         
         $url=$parameters['url'];
-        list($empty, $module,$controller,$action)=explode('/',$url);
-        $this->module = $module;
-        $this->controller = $controller;
-        $this->action = $action;
-        $this->templateFile = 'modules/' . $module . '/templates/' . $controller . '/' . $action . '.ezt';
+        $parameters['id']=$url->getParam('id');
+        //list($empty, $module,$controller,$action)=explode('/',$url);
+        $this->module = $url->getParam('module');
+        $this->controller = $url->getParam('controller');
+        $action = $this->action = $url->getParam('action');
+        $this->templateFile = 'modules/' . $this->module . '/templates/' . $this->controller . '/' . $this->action . '.ezt';
         $this->result_code = BC_RENDER_VIEW;
         return $this->$action($parameters);
     }

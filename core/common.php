@@ -3,12 +3,12 @@
 require_once "ezc/Base/src/base.php";
 require_once "settings/config.php";
 
-require_once "core/classes/Dispatcher.php";
+//require_once "core/classes/Dispatcher.php";
 
 
 define('DIR_DEFINITIONS','app/model/definitions');
 
-require_once('core/classes/Action.php');
+//require_once('core/classes/Action.php');
 
 function __autoload( $className )
 {
@@ -23,7 +23,7 @@ $session = new ezcPersistentSession( $dbInstance,
         
 ezcPersistentSessionInstance::set( $session ); // set default session
  
+ezcBase::addClassRepository( '.', './core/autoloads' );
 // retrieve the session
 //$session = ezcPersistentSessionInstance::get();
-
 ?>
