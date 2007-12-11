@@ -57,7 +57,7 @@ class BlendModule
             require_once($path);
             $controllerName = ucfirst($controller) . 'Controller';
             $controller = new $controllerName();
-            return $controller;            
+            return $controller;
         }
         else
         {

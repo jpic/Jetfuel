@@ -12,7 +12,7 @@ class UrlCreator implements ezcTemplateCustomFunction
                 $def->method = "geturl";
 
                 // Deprecated:
-                $def->parameters = array( "name", "[params]");
+                $def->parameters = array( "name", "[params]", "[params2]");
 
                 return $def;
         }
@@ -21,17 +21,23 @@ class UrlCreator implements ezcTemplateCustomFunction
     }
 
 
-    public static function geturl( $name, $params = null)
+    public static function geturl( $name, $params = null, $params2 = null)
     {
-		
-		if($params)
-		{
-			return ezcUrlCreator::getUrl($name, $params);
-		}
-		else
-		{
-			return ezcUrlCreator::getUrl($name);
-		}
+        try
+        {
+            if($params)
+            {
+                    return ezcUrlCreator::getUrl($name, $params, $params2);
+            }
+            else
+            {
+                    return ezcUrlCreator::getUrl($name);
+            }
+        }
+        catch (Exception $e)
+        {
+            return '#';
+        }
     }
 }
 

@@ -32,6 +32,12 @@ class Dispatcher
             $this->urlConfigs[$moduleObj->identifier]=$moduleObj->urlConfig;
             $this->modules[]=$moduleObj;
         }
+        $defaultConfig=new ezcUrlConfiguration();
+        $defaultConfig->addOrderedParameter('module');
+        $defaultConfig->addOrderedParameter('controller');
+        $defaultConfig->addOrderedParameter('action');
+        $defaultConfig->addOrderedParameter('id');
+        $this->urlConfigs['']=$defaultConfig;
     }
 
     /**
@@ -67,10 +73,12 @@ class Dispatcher
             {
                 case BC_REDIRECT:
                     $this->redirect($controller);
+                break;
                 case BC_RENDER_VIEW:
                 default:
-                    $this->renderView($controller);            
+                    $this->renderView($controller);
             }
+            
         }
         else
         {
@@ -93,15 +101,22 @@ class Dispatcher
       $moduleIdentifier = $url->getParam('module');
       
       $urlConfig = $this->urlConfigs[$moduleIdentifier];
-      $url->applyConfiguration($urlConfig);
-      //var_dump($url->params);
       
-      $parameters = array_merge($url->getQuery(), $_POST);
-      $parameters['url'] = $url;
-      $parameters['method'] = strtolower($_SERVER['REQUEST_METHOD']);  
-      $parameters['client_ip'] = $_SERVER['REMOTE_ADDR'];
-      $parameters['client_port'] = $_SERVER['REMOTE_PORT'];
-       //            var_dump($url->path);
+      if(!$urlConfig)
+      {
+        $urlConfig = $this->urlConfigs['notfound'];
+        $url=new ezcURL('/notfound/notfound/notfound', $urlConfigRoot);
+      }
+        $url->applyConfiguration($urlConfig);
+       // var_dump($url->params);
+        
+        $parameters = array_merge($url->getQuery(), $_POST);
+        $parameters['url'] = $url;
+        $parameters['method'] = strtolower($_SERVER['REQUEST_METHOD']);  
+        $parameters['client_ip'] = $_SERVER['REMOTE_ADDR'];
+        $parameters['client_port'] = $_SERVER['REMOTE_PORT'];
+        //            var_dump($url->path);
+      
 
     }
     
@@ -113,11 +128,13 @@ class Dispatcher
     
     protected function renderView($controller)
     {
+        header('Status: ' . $controller->status_code);
         $debug = ezcDebug::getInstance();
         $tplConfig = new ezcTemplateConfiguration( "app",
                                                     "tmp" );
 		$tplConfig->addExtension( "CustomDate" );
 		$tplConfig->addExtension( "CustomMath" );
+		$tplConfig->addExtension( "MoneyFormat" );
 		$tplConfig->addExtension( "UrlCreator" );
         $tplConfig->disableCache=true;
         $tplConfig->checkModifiedTemplates=true;
@@ -140,8 +157,8 @@ class Dispatcher
         $path = 'design/templates/layout/' . $controller->layout . '.ezt';
         echo $layoutTpl->process($path);
         
-        $output = $debug->generateOutput();
-        echo $output;      
+        //$output = $debug->generateOutput();
+        //echo $output;      
     }
 }
 

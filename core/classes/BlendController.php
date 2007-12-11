@@ -27,6 +27,7 @@ class BlendController
     public $controller = null;
     public $action = null;
     public $layout = 'default';
+    public $status_code = 200;
 
     function __construct()
     {
@@ -69,9 +70,19 @@ class BlendController
         $url=$parameters['url'];
         $parameters['id']=$url->getParam('id');
         //list($empty, $module,$controller,$action)=explode('/',$url);
-        $this->module = $url->getParam('module');
-        $this->controller = $url->getParam('controller');
+        if (!$this->module)
+        {
+            $this->module = $url->getParam('module');
+        }
+        if (!$this->controller)
+        {
+            $this->controller = $url->getParam('controller');
+        }
         $action = $this->action = $url->getParam('action');
+        if (!$action)
+        {
+            $action = $this->action = 'index';
+        }
         $this->templateFile = 'modules/' . $this->module . '/templates/' . $this->controller . '/' . $this->action . '.ezt';
         $this->result_code = BC_RENDER_VIEW;
         return $this->$action($parameters);
