@@ -48,7 +48,12 @@ class BlendModule
         $module = $url->getParam('module');
         $controller = $url->getParam('controller');
        // print_r(explode('/',$url));
-       //     echo $path . ":$url:";        
+       //     echo $path . ":$url:";   
+        
+        //this is what should be setting the controller to the same name as the modules (this wasn't in it originally) 
+        //-- added 1/17/08
+        $controller=($controller ? $controller : $module);
+
         if($module==$this->identifier)
         {
 

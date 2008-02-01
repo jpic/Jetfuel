@@ -8,8 +8,8 @@ class BlendExecutionHandler implements ezcExecutionErrorHandler
 
 
         $mail = new ezcMailComposer();
-        $mail->from = new ezcMailAddress( 'chris.lukenbill@gmail.com', 'Chris Testing' );
-        $mail->addTo( new ezcMailAddress( 'Chris@blendinteractive.com', 'Chris Lukenbill' ) );
+        $mail->from = new ezcMailAddress( 'errors@blendinteractive.com', 'Trevor Error Mailer' );
+        $mail->addTo( new ezcMailAddress( 'errors@blendinteractive.com', 'Blend Errors' ) );
         $mail->subject = "Error occured on Juniper";
         $mail->plainText = BlendExecutionHandler::BuildPlainTextEmail($e);
         $mail->htmlText = BlendExecutionHandler::BuildEmail($e);
