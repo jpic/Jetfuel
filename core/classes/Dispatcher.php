@@ -1,43 +1,39 @@
 <?php
+/**
+ * @package TrevorCore
+ */
 
 /**
- * Dispatcher handles inbound HTTP requests and decides what 
- * action to invoke, and whether a template should be rendered
+ * Dispatcher handles inbound HTTP requests and decides what action to invoke, and whether a template should be rendered.
+ * The Dispatcher is the main entry point into the application, and routes requests to all other parts of the app.
+ * Example: 
+ * <code>
+ * <?php 
+ * require_once 'core/common.php';
+ * $dispatch = new Dispatcher();
+ * $dispatch->dispatch();
+ * ?>
+ * </code>
+ * @package TrevorCore
  */
 class Dispatcher
 {
     /**
      * An array of all active modules, in the 
-     * order that they should be evaluated.
+     order that they should be evaluated.
      * 
-     * @var array
+     * @var array(BlendModule)
      * @access protected
      */
-    protected $modules=array();
+
     protected $urlConfigs = array();
     protected $url;
 
     function __construct()
     {
-        global $active_modules;
         session_start();
         //Retrieve a list of active modules
         //and load them
-        foreach ($active_modules as $module)
-        {
-         //echo "<hr>$module<hr>";
-            require_once('app/modules/' . strtolower($module) . '/' . $module . 'Module.php');
-            $moduleClass=$module . 'Module';
-            $moduleObj = new $moduleClass();
-            $this->urlConfigs[$moduleObj->identifier]=$moduleObj->urlConfig;
-            $this->modules[]=$moduleObj;
-        }
-        $defaultConfig=new ezcUrlConfiguration();
-        $defaultConfig->addOrderedParameter('module');
-        $defaultConfig->addOrderedParameter('controller');
-        $defaultConfig->addOrderedParameter('action');
-        $defaultConfig->addOrderedParameter('id');
-        $this->urlConfigs['']=$defaultConfig;
     }
 
     /**
@@ -48,27 +44,23 @@ class Dispatcher
     {
         $parameters = array();
 
-        //Populate the parameters list        
-        $this->parseUrl($parameters);
-        
-        $controller = null;
-        
-        //Run through the active modules and ask for a controller
-        //to handle this request. Use the first one that gives us a 
-        //controller.
+        //Populate the parameters list
+        //$this->parseUrl($parameters);
 
-        foreach ($this->modules as $module)
-        {
-            $controller = $module->retrieveController($parameters);
-            if ($controller)
-            {
-                break;
-            } 
-        }
+        $controller = null;
+
+        //Determine which controller should handle the request.
+        $router = new BlendRouter;
+        $route = $router->parse($_SERVER['REQUEST_URI']);
+
+        $parameters = array_merge( $_GET, $_POST, $route);
+
+        $controller=$this->loadController($parameters);
+
         if ($controller)
         {
             $controller->invoke($parameters);
-            
+
             switch($controller->result_code)
             {
                 case BC_REDIRECT:
@@ -78,14 +70,25 @@ class Dispatcher
                 default:
                     $this->renderView($controller);
             }
-            
+
         }
         else
         {
             echo "No controller available";
         }
-    }  
-    
+    }
+
+    private function loadController(&$parameters)
+    {
+        $controllerName=ucfirst($parameters['controller']) . 'Controller';
+        $path = SITE_ROOT . '/app/controllers/' . $controllerName . '.php';
+
+        require_once($path);
+        //$controllerClassName = ucfirst($controller) . 'Controller';
+        $controller = new $controllerName();
+        return $controller;
+    }
+
     /**
      * parseUrl sets up the parameters list by breaking up the URL and providing some 
      * default variables.
@@ -130,8 +133,8 @@ class Dispatcher
     {
         header('Status: ' . $controller->status_code);
         $debug = ezcDebug::getInstance();
-        $tplConfig = new ezcTemplateConfiguration( "app",
-                                                    "tmp" );
+        $tplConfig = new ezcTemplateConfiguration( SITE_ROOT . "/app",
+                                                   SITE_ROOT . "/tmp" );
 		$tplConfig->addExtension( "CustomDate" );
 		$tplConfig->addExtension( "CustomMath" );
 		$tplConfig->addExtension( "MoneyFormat" );
@@ -154,7 +157,7 @@ class Dispatcher
         $layoutTpl->configuration = $tplConfig;
         $layoutTpl->send = new ezcTemplateVariableCollection($merged);
             
-        $path = 'design/templates/layout/' . $controller->layout . '.ezt';
+        $path = 'layouts/' . $controller->layout . '.ezt';
         echo $layoutTpl->process($path);
         
         //$output = $debug->generateOutput();

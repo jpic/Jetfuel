@@ -1,9 +1,12 @@
 <?php
-
+/**
+ * @package TrevorCore
+ */
 /** 
- * The BlendModule class encapsulates an extensible portion of the 
- * system. It serves as a façade that outside components, like the 
+ * The BlendModule class encapsulates an extensible portion of the system. 
+ * It serves as a facade that outside components, like the 
  * dispatcher, use to access the functionality of the module
+ * @package TrevorCore
  */ 
 class BlendModule
 {
@@ -11,7 +14,7 @@ class BlendModule
     /**
      * Name of the module. Should be a single-word, lowercase string
      *
-     * @var identifier
+     * @var string
      */ 
     public $identifier = null;
     public $urlConfig = null;

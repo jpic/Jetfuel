@@ -1,4 +1,12 @@
 <?php
+/**
+ * @package TrevorCore
+ */
+ 
+/**
+ * BlendExecutionHandler provides the ability to intercept and handle error messages from the application.
+ * @package TrevorCore
+ */
 class BlendExecutionHandler implements ezcExecutionErrorHandler
 {
     public static function onError( Exception $e = NULL )

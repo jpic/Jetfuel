@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * @package TrevorCore
+ */
+/**
+ *
+ * @package TrevorCore
+ */
 class BlendComponent
 {
     protected $component;
