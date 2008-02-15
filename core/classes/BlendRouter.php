@@ -48,13 +48,13 @@ class BlendRouter
             'defaults' => array('controller'=>$resourceName, 'action'=>'newobj'),
             'tokens' => array('', "$resourceName", 'new'));
 
-        $this->rules[]= array('pattern'=>"/$resourceName/edit", 
+        $this->rules[]= array('pattern'=>"/$resourceName/:id/edit", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'edit'),
-            'tokens' => array('', "$resourceName", 'edit'));
+            'tokens' => array('', "$resourceName", ':id', 'edit'));
 
-        $this->rules[]= array('pattern'=>"/$resourceName/delete", 
+        $this->rules[]= array('pattern'=>"/$resourceName/:id/delete", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'destroy'),
-            'tokens' => array('', "$resourceName","delete"),
+            'tokens' => array('', "$resourceName",':id', "delete"),
             'method' => 'POST');
 
         $this->rules[]= array('pattern'=>"/$resourceName", 

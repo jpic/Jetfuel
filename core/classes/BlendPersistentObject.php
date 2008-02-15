@@ -123,7 +123,10 @@ class BlendPersistentObject
         foreach ($props as $prop)
         {
             $propName = $prop->name;
-            $this->$propName = $params[$propName];
+			if($params[$propName])
+			{
+				$this->$propName = $params[$propName];
+			}
         }
 
     }
