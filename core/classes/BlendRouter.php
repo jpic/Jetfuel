@@ -97,7 +97,24 @@ class BlendRouter
         {
             $url = substr($url, 0, strpos($url, '?'));
         }
+        
+
+        
         $tokens = explode('/', rtrim($url, " /"));
+        
+        
+//        echo "URL: [$url] <br />";
+
+        if(trim($url)=="/")
+        {
+//        echo "TRIM";
+            $tokens=array('','');
+        }
+        
+//        echo "URL: [$url] <br />";        
+        
+        
+//        echo "<pre>Tokens:"; print_r($tokens); echo "</pre>";
 
         foreach($this->rules as $rule)
         {
@@ -107,13 +124,14 @@ class BlendRouter
             }
         }
 
-        //echo "<pre>"; print_r($route); echo "</pre>";
+//        echo "<pre>Route:"; print_r($route); echo "</pre>";
+//        echo "<pre>Rules:"; print_r($this->rules); echo "</pre>";
+
         return $route;
     }
 
     private function matchRule($tokens, $rule)
     {
-//        echo "URL: $url <br />";
         $method=$_SERVER['REQUEST_METHOD'];
 
         if (count($tokens) == count($rule['tokens']))
@@ -122,7 +140,7 @@ class BlendRouter
             {
                 return false;
             }
-//            echo "<pre>"; print_r($tokens); print_r($rule); echo "</pre>";
+//            echo "<pre>Tokens:"; print_r($tokens); print_r($rule); echo "</pre>";
             $route = array('controller'=>'', 'action'=>'', 'id'=>'');
             $route = array_merge($route, $rule['defaults']);
             $match=true;

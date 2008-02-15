@@ -1,4 +1,8 @@
 <?php
+/** 
+ * @package TrevorCore
+ */
+
 global $model;
 $classes=array(
   'Action'=>'../../core/classes/Action.php',

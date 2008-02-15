@@ -53,6 +53,12 @@ class Dispatcher
         $router = new BlendRouter;
         $route = $router->parse($_SERVER['REQUEST_URI']);
 
+        if (!$route)
+        {
+            echo "File not found.";
+            return;
+        }
+        
         $parameters = array_merge( $_GET, $_POST, $route);
 
         $controller=$this->loadController($parameters);

@@ -1,5 +1,11 @@
 <?php
+/**
+ * @package TrevorCore
+ */
 
+/**
+ * @package TrevorCore
+ */
 interface Action 
 {
     public function __construct();
