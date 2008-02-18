@@ -49,6 +49,12 @@
 class BlendPersistentObject
 {
 
+    public $errors=array();
+    public $isValid=null;
+    
+    public $relations = array();
+    public $validation = array();
+
     function __construct()
     {
     }
@@ -256,10 +262,114 @@ class BlendPersistentObject
     
     public function save()
     {
-        $dbsession = ezcPersistentSessionInstance::get();
-        $dbsession->saveOrUpdate($this);
+        if ($this->validate())
+        {
+            $dbsession = ezcPersistentSessionInstance::get();
+            $dbsession->saveOrUpdate($this);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
+    public function getValidationRules()
+    {
+        return array();
+    }
+    
+    public function validate()
+    {
+        $this->errors=array();
+        $this->isValid=true;
+
+        $validRules = $this->getValidationRules();
+        
+        if (!$validRules)
+        {
+            return;
+        }
+        
+        foreach ($validRules as $field=>$rules)
+        {
+            $value = $this->$field;
+            
+//            echo "<pre>$field:"; print_r($rules); echo "</pre>";
+            
+            if($rules['prefilter'])
+            {
+                $value=preg_replace($rules['prefilter'],'',$value);
+            }
+            
+            if(!$rules['required'] && ($value == null || $value == ''))
+            {
+                continue;
+            }
+            
+            if($rules['required'] && ($value == null || $value == ''))
+            {
+                $this->isValid=false;
+                $this->errors[$field]=$rules['message'];
+                continue;
+            }
+            
+            if($rules['type'])
+            {
+                switch($rules['type'])
+                {
+                    case 'int':
+                        if(!ctype_digit($value))
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;
+                        }
+                        if($rules['min'] && intval($value) < $rules['min'])
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;
+                        }
+                        if($rules['max'] && intval($value) > $rules['max'])
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;
+                        }
+                    break;
+                    case 'float':
+                        if(!is_numeric($value))
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;
+                        }
+                        if($rules['min'] && floatval($value) < $rules['min'])
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;
+                        }
+                        if($rules['max'] && floatval($value) > $rules['max'])
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;
+                        }
+                    break;
+                    case 'boolean':
+                    break;
+                    case 'string':
+                    break;
+                }
+            }
+        }
+        
+        return $this->isValid;
+    }
+    
+
     public function delete()
     {
         $dbsession = ezcPersistentSessionInstance::get();
@@ -271,15 +381,33 @@ class BlendPersistentObject
         if ($this->relations[$name])
         {
             
-            $session = ezcPersistentSessionInstance::get();
-            try {
-            $objects = $session->getRelatedObjects($this, $this->relations[$name]);
-            }
-            catch (ezcPersistentRelatedObjectNotFoundException $e)
+            $dbsession = ezcPersistentSessionInstance::get();
+            
+            if ($this->relations[$name]['type']=='single')
             {
-                return array();
+                try
+                {
+                    $object = $dbsession->getRelatedObject($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                }
+                catch (ezcPersistentRelatedObjectNotFoundException $e)
+                {
+                    return null;
+                }
+                return $object;
+                
             }
-            return $objects;
+            else
+            {
+                try 
+                {
+                $objects = $dbsession->getRelatedObjects($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                }
+                catch (ezcPersistentRelatedObjectNotFoundException $e)
+                {
+                    return array();
+                }
+                return $objects;
+            }
         }
 
     }    

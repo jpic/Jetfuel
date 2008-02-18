@@ -66,6 +66,8 @@ class Dispatcher
         if ($controller)
         {
             $controller->invoke($parameters);
+            
+            header("HTTP/1.0 " . $controller->status_code);
 
             switch($controller->result_code)
             {
