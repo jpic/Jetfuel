@@ -1,7 +1,6 @@
 <?php
 //require_once "ezc/Base/base.php";
 //session_set_cookie_params(time() + (86400 * 90));
-set_include_path( "/var/www/tlbcrm/htdocs/ezc/trunk:" . ini_get( "include_path" )  );
 
 require_once "Base/src/base.php";
 
@@ -19,6 +18,8 @@ function __autoload( $className )
 }
 
 define('SITE_ROOT', dirname(__FILE__) . '/..');
+define('APP_ROOT', dirname(__FILE__) . '/../app');
+
 
 $cfg = ezcConfigurationManager::getInstance();
 $cfg->init('ezcConfigurationIniReader', SITE_ROOT . '/settings');

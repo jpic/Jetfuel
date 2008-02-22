@@ -218,7 +218,7 @@ class BlendController
         
         //echo "<pre>"; print_r($parameters); echo "</pre>";
 
-        $this->templateFile = 'views/' . $this->controller . '/' . $this->action . '.ezt';
+        $this->templateFile = 'views/' . $this->controller . '/' . $this->action;
         $this->result_code = BC_RENDER_VIEW;
         return $this->$action($parameters);
     }

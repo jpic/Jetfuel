@@ -139,14 +139,47 @@ class Dispatcher
     
     protected function renderView($controller)
     {
+    
+        $cfg = ezcConfigurationManager::getInstance();
+        $handlerName = $cfg->getSetting('config','View','Renderer');
+        
         header('Status: ' . $controller->status_code);
+
+        switch($handlerName)
+        {
+            case 'php':
+                $this->renderViewPhp($controller);
+            break;
+            case 'ezt':
+            case 'template':
+                $this->renderViewTemplate($controller);
+            break;
+            default:
+                throw new Exception("Invalid View Renderer '$handlerName'. Please enter either 'ezt' or 'php' in the Renderer setting in settings/config.ini");
+
+        }
+    }
+    
+    protected function renderViewPhp($controller)
+    {
+        extract($controller->vars);
+        ob_start();
+        require(APP_ROOT . '/' . $controller->templateFile . '.php');
+        $result=ob_get_clean();
+        
+        require(APP_ROOT . '/layouts/' . $controller->layout . '.php');
+    }
+    
+    protected function renderViewTemplate($controller)
+    {
+
         $debug = ezcDebug::getInstance();
         $tplConfig = new ezcTemplateConfiguration( SITE_ROOT . "/app",
                                                    SITE_ROOT . "/tmp" );
-		$tplConfig->addExtension( "CustomDate" );
-		$tplConfig->addExtension( "CustomMath" );
-		$tplConfig->addExtension( "MoneyFormat" );
-		$tplConfig->addExtension( "UrlCreator" );
+        $tplConfig->addExtension( "CustomDate" );
+        $tplConfig->addExtension( "CustomMath" );
+        $tplConfig->addExtension( "MoneyFormat" );
+        $tplConfig->addExtension( "UrlCreator" );
         $tplConfig->disableCache=true;
         $tplConfig->checkModifiedTemplates=true;
         $tpl = new ezcTemplate();
@@ -156,7 +189,7 @@ class Dispatcher
         $receive = $tpl->receive;
         
         //var_dump($controller->vars);
-        $result=$tpl->process($controller->templateFile);
+        $result=$tpl->process($controller->templateFile . '.ezt');
         
         //echo $result;
         
