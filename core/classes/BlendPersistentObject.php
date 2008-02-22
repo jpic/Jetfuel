@@ -383,11 +383,64 @@ class BlendPersistentObject
             
             $dbsession = ezcPersistentSessionInstance::get();
             
+            if ($this->relations[$name]['name'])
+            {
+                $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+            }
+            else
+            {
+                $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class']);
+            }
+            
+            if ($relations[$name]['orderBy'])
+            {
+                $q->orderBy($relations[$name]['orderBy']);
+            }
+            
+            try
+            {
+            
+                if ($this->relations[$name]['name'])
+                {
+                    $objects = $dbsession->find($q, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                }
+                else
+                {
+                    $objects = $dbsession->find($q, $this->relations[$name]['class']);
+                }
+            
+            }
+            catch (ezcPersistentRelatedObjectNotFoundException $e)
+            {
+                return null;
+            }            
+            
+            if ($this->relations[$name]['type']=='single')
+            {
+                return $objects[0];
+            }
+            else
+            {
+                return $objects;
+            }
+            
+            /*
             if ($this->relations[$name]['type']=='single')
             {
                 try
                 {
-                    $object = $dbsession->getRelatedObject($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                    if ($this->relations[$name]['name'])
+                    {
+                    
+                        $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                        
+                        
+                        $object = $dbsession->getRelatedObject($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                    }
+                    else
+                    {
+                        $object = $dbsession->getRelatedObject($this, $this->relations[$name]['class']);
+                    }
                 }
                 catch (ezcPersistentRelatedObjectNotFoundException $e)
                 {
@@ -400,16 +453,32 @@ class BlendPersistentObject
             {
                 try 
                 {
-                $objects = $dbsession->getRelatedObjects($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
-                }
+                    if ($this->relations[$name]['name'])
+                    {
+                        $objects = $dbsession->getRelatedObjects($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                    }
+                    else
+                    {
+                        $objects = $dbsession->getRelatedObjects($this, $this->relations[$name]['class']);
+                    }                }
                 catch (ezcPersistentRelatedObjectNotFoundException $e)
                 {
                     return array();
                 }
                 return $objects;
             }
-        }
+                */
 
+        }
+        $clz = new ReflectionClass( get_class($this) );
+
+        if ($clz->hasMethod("get_$name"))
+        {
+            $method = $clz->getMethod("get_$name");
+            return $method->invoke($this);
+            //return $this->get_$name();
+        }
+        
     }    
 
 }
