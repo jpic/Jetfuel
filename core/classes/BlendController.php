@@ -151,10 +151,28 @@ class BlendController
      * @access public
      */
     public $status_code = 200;
+    
+    /**
+     * A data structure containing filters that should be run before an action is called.
+     * Use {@link appendBeforeFilter()} and {@link prependBeforeFilter()} to manipulate.
+     * @param array(mixed)
+     * @access protected
+     */
+    protected $beforeFilters;
+
+    /**
+     * A data structure containing filters that should be run after an action is completed.
+     * Use {@link appendAfterFilter()} and {@link prependAfterFilter()} to manipulate.
+     * @param array(mixed)
+     * @access protected
+     */
+    protected $afterFilters;
+
 
     function __construct()
     {
         $this->vars=array();
+
         
         //Instantiate the components and store them in an array.
         /* //Commenting out components for eventual removal
@@ -220,9 +238,87 @@ class BlendController
 
         $this->templateFile = 'views/' . $this->controller . '/' . $this->action;
         $this->result_code = BC_RENDER_VIEW;
+        
+        $this->invokeBeforeFilters($action);
+        
         return $this->$action($parameters);
     }
     
+    /**
+     * invokeBeforeFilters fires any filters in the 'before' filter chain before an action is invoked.
+     * @access protected
+     */
+     public function invokeBeforeFilters($action)
+     {
+        if(!$this->beforeFilters)
+        {
+            return;
+        }
+
+        foreach ($this->beforeFilters as $filterDef)
+        {
+            $execute = false;
+            switch($filterDef['exceptionType'])
+            {
+                case 'include':
+                    if(in_array($action, $filterDef['exceptionList']))
+                    {
+                        $execute = true;
+                    }
+                break;
+                
+                default: //default case is 'exclude'
+                    if(!in_array($action, $filterDef['exceptionList']))
+                    {
+                        $execute = true;
+                    }
+                
+            }
+            
+            if($execute)
+            {
+                $functionName = $filterDef['function'];
+                $this->$functionName();
+            }
+        }
+     }
+    
+    
+    /**
+     * appendBeforeFilter adds a new filter call to the end of the 'before' filter chain.
+     * When an action is called, a series of functions can be run prior to the action method's
+     * execution. These commands can manipulate the data being provided to the action. The 
+     * 'before' filters are run 'before' the action executes.
+     * 
+     * Examples of these sorts of filters would be an authentication filter that makes sure 
+     * you're logged in, and redirects you to another action if you're not.
+     * 
+     * The appendBeforeFilter command attaches a new filter to the end of the 'before' filter chain,
+     * so that it runs after any filters already in the list.
+     * @access public
+     */
+     public function appendBeforeFilter($functionName, $exceptionType='exclude', $exceptionList=array())
+     {
+        $this->beforeFilters[]=array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList);
+     }
+     
+    /**
+     * prependBeforeFilter adds a new filter call to the beginning of the 'before' filter chain.
+     * When an action is called, a series of functions can be run prior to the action method's
+     * execution. These commands can manipulate the data being provided to the action. The 
+     * 'before' filters are run 'before' the action executes.
+     * 
+     * Examples of these sorts of filters would be an authentication filter that makes sure 
+     * you're logged in, and redirects you to another action if you're not.
+     * 
+     * The prependBeforeFilter command attaches a new filter to the start of the 'before' filter chain,
+     * so that it runs before any filters already in the list.
+     * @access public
+     */     
+     public function prependBeforeFilter($functionName, $exceptionType='exclude', $exceptionList=array())
+     {
+        array_unshift($this->beforeFilters, array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList));
+     }   
 }
 
 ?>

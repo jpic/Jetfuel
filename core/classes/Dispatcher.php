@@ -161,7 +161,7 @@ class Dispatcher
     }
     
     protected function renderViewPhp($controller)
-    {
+    {//echo "[[$controller->templateFile]]";
         extract($controller->vars);
         ob_start();
         require(APP_ROOT . '/' . $controller->templateFile . '.php');

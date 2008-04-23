@@ -213,25 +213,54 @@ class BlendPersistentObject
     public static function findByQuery($query, $className, $options=array())
     {
     
+        $objects = null;
         if (!$options['include'])
         {
             $dbsession = ezcPersistentSessionInstance::get();
             $objects = $dbsession->find( $query, $className );
-            return $objects;
         }
         else
         {
             //The eager load method doesn't really eager load yet.
             $dbsession = ezcPersistentSessionInstance::get();
             $objects = $dbsession->find( $query, $className );
-            return $objects;
 
 //            $stmt=$query->prepare();
 //            $rows=$stmt->execute();
 //            echo "<pre>"; print_r($rows); echo "</pre>";
         }
         
+        if (!$options['single'])
+        {
+            return $objects;
+        }
+        else
+        {
+            return $objects[0];
+        }
+        
     }
+
+
+    /**
+     * Adds a related object
+     */
+    public function addRelated($object, $relationName = null)
+    {
+        $dbsession = ezcPersistentSessionInstance::get();
+        $dbsession->addRelatedObject($this, $object, $relationName);
+    }
+    
+    /**
+     * Removes a related objects
+     */
+    public function removeRelated($object, $relationName = null)
+    {
+        $dbsession = ezcPersistentSessionInstance::get();
+        $dbsession->removeRelatedObject($this, $object, $relationName);
+    }
+     
+     
 
     public function getState()
     {
@@ -260,12 +289,30 @@ class BlendPersistentObject
         }
     }
     
+    /** 
+     * stub function to be overriden by children for data manipulation before object save
+     */
+    public function beforeSave()
+    {
+    
+    }
+    
+    /** 
+     * stub function to be overriden by children for data manipulation after object save
+     */
+    function afterSave()
+    {
+    
+    }
+    
     public function save()
     {
         if ($this->validate())
         {
+            $this->beforeSave();
             $dbsession = ezcPersistentSessionInstance::get();
             $dbsession->saveOrUpdate($this);
+            $this->afterSave();
             return true;
         }
         else
@@ -288,7 +335,7 @@ class BlendPersistentObject
         
         if (!$validRules)
         {
-            return;
+            return true;
         }
         
         foreach ($validRules as $field=>$rules)
@@ -365,7 +412,6 @@ class BlendPersistentObject
                 }
             }
         }
-        
         return $this->isValid;
     }
     
@@ -382,7 +428,7 @@ class BlendPersistentObject
         {
             
             $dbsession = ezcPersistentSessionInstance::get();
-            
+
             if ($this->relations[$name]['name'])
             {
                 $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class'], $this->relations[$name]['name']);

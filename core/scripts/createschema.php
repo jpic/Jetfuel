@@ -1,4 +1,6 @@
 <?php
+set_include_path( "/var/www/timesheet2008/trevor/ezc/trunk:" . ini_get( "include_path" )  );
+
 require_once('core/common.php');
 // create a database schema from a database connection:
 echo DB_DSN;
