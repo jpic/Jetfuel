@@ -173,7 +173,7 @@ class BlendController
     {
         $this->vars=array();
 
-        
+        $this->beforeFilters=array();
         //Instantiate the components and store them in an array.
         /* //Commenting out components for eventual removal
         foreach($this->components as $component)
@@ -317,7 +317,15 @@ class BlendController
      */     
      public function prependBeforeFilter($functionName, $exceptionType='exclude', $exceptionList=array())
      {
-        array_unshift($this->beforeFilters, array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList));
+        if(is_array($this->beforeFilters))
+        {
+            array_unshift($this->beforeFilters, array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList));
+        }
+        else
+        {
+            $this->beforeFilters = array();
+            $this->beforeFilters[]=array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList);
+        }
      }   
 }
 

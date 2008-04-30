@@ -32,9 +32,14 @@ class BlendRouter
      * @param array $defaults
      * a hash containing default values to assign for elements not provided in the urlPattern
      */
-    public function addRule($urlPattern, $defaults=array())
+    public function addRule($urlPattern, $defaults=array(), $method='GET')
     {
-       $this->rules[]= array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
+        $rule = array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
+        if (strtoupper($method) != 'GET')
+        {
+            $rule['method']=strtoupper($method);
+        }
+        $this->rules[]= $rule;
     }
 
     public function addResource($resourceName, $options=array())

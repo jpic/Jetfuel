@@ -101,13 +101,14 @@ class BlendPersistentObject
         
         $clz = new ReflectionClass( $className );
         $props = $clz->getProperties();
-        
+
         foreach ($props as $prop)
         {
             $propName = $prop->name;
 //            echo $propName;
             $object->$propName = $params[$propName];
-        }        
+        } 
+      
         return $object;
     }
 
@@ -437,10 +438,10 @@ class BlendPersistentObject
             {
                 $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class']);
             }
-            
-            if ($relations[$name]['orderBy'])
+
+            if ($this->relations[$name]['orderBy'])
             {
-                $q->orderBy($relations[$name]['orderBy']);
+                $q->orderBy($this->relations[$name]['orderBy']);
             }
             
             try
