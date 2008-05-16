@@ -1,34 +1,34 @@
 <?php
 /**
- * @package TrevorCore
+ * @package JetFuelCore
  */
 
 /**
- * BC_RENDER_VIEW is defined as the 'render' process in the Dispatcher. This tells the Dispatcher to 
+ * JF_RENDER_VIEW is defined as the 'render' process in the Dispatcher. This tells the Dispatcher to 
  render templates for this action. (this is the default thing to do)
  */
-define('BC_RENDER_VIEW',1);
+define('JF_RENDER_VIEW',1);
 /**
- * BC_REDIRECT tells the Dispatcher to redirect the request instead of rendering a template.
+ * JF_REDIRECT tells the Dispatcher to redirect the request instead of rendering a template.
  */
-define('BC_REDIRECT',2);
+define('JF_REDIRECT',2);
 
 
 /**
- * BlendController forms the basis for all controllers on the system
+ * JFController forms the basis for all controllers on the system
  * 
- * The BlendController forms the 'Controller' portion of the Model/View/Controller pattern. 
+ * The JFController forms the 'Controller' portion of the Model/View/Controller pattern. 
  * It's responsible for taking input from the user, performing some action on the Model, and 
  * returning that information to the View to be displayed back to the user. In short, the controllers 
  * are where the actual workings of the app are orchestrated.
  *
- * The {@link Dispatcher} looks for subclasses of BlendController in the app/controllers folder. 
+ * The {@link Dispatcher} looks for subclasses of JFController in the app/controllers folder. 
  *
  * As an example, if a user requests the url '/person/index', that might be handled by the 'index' action on 
  * the PersonController class in app/controllers/PersonController.php
  *
  * Usually, an app's controllers are subclasses of {@link ApplicationController}, which is itself a subclass of 
- * BlendController. That way, functions common to all controllers within your app can be placed on ApplicationController.
+ * JFController. That way, functions common to all controllers within your app can be placed on ApplicationController.
  *
  * Actions are just defined as methods on the Controller class, so the PersonController in our example might look like this:
  * <code>
@@ -44,9 +44,9 @@ define('BC_REDIRECT',2);
  * }
  * ?>
  * </code>
- * @package TrevorCore
+ * @package JetFuelCore
  */
-class BlendController
+class JFController
 {
 
     /**
@@ -90,7 +90,7 @@ class BlendController
      * @see redirect()
      * @access public
      */
-    public $result_code = BC_RENDER_VIEW;
+    public $result_code = JF_RENDER_VIEW;
     
     /**
      * $redirect_url determines where the browser should be redirected to during a redirect
@@ -173,7 +173,7 @@ class BlendController
     {
         $this->vars=array();
 
-        $this->beforeFilters=array();
+        
         //Instantiate the components and store them in an array.
         /* //Commenting out components for eventual removal
         foreach($this->components as $component)
@@ -206,7 +206,7 @@ class BlendController
      */
     function redirect($url, $status_code = 302)
     {
-        $this->result_code = BC_REDIRECT;
+        $this->result_code = JF_REDIRECT;
         $this->redirect_url = $url;
         $this->redirect_status_code = $status_code;
     }
@@ -237,7 +237,7 @@ class BlendController
         //echo "<pre>"; print_r($parameters); echo "</pre>";
 
         $this->templateFile = 'views/' . $this->controller . '/' . $this->action;
-        $this->result_code = BC_RENDER_VIEW;
+        $this->result_code = JF_RENDER_VIEW;
         
         $this->invokeBeforeFilters($action);
         
@@ -317,15 +317,7 @@ class BlendController
      */     
      public function prependBeforeFilter($functionName, $exceptionType='exclude', $exceptionList=array())
      {
-        if(is_array($this->beforeFilters))
-        {
-            array_unshift($this->beforeFilters, array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList));
-        }
-        else
-        {
-            $this->beforeFilters = array();
-            $this->beforeFilters[]=array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList);
-        }
+        array_unshift($this->beforeFilters, array('function'=>$functionName, 'exceptionType'=>$exceptionType, 'exceptionList'=>$exceptionList));
      }   
 }
 

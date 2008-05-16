@@ -1,6 +1,6 @@
 <?php
 /**
- * @package TrevorCore
+ * @package JetFuelCore
  */
 
 /**
@@ -14,7 +14,7 @@
  * $dispatch->dispatch();
  * ?>
  * </code>
- * @package TrevorCore
+ * @package JetFuelCore
  */
 class Dispatcher
 {
@@ -50,7 +50,7 @@ class Dispatcher
         $controller = null;
 
         //Determine which controller should handle the request.
-        $router = new BlendRouter;
+        $router = new JFRouter;
         $route = $router->parse($_SERVER['REQUEST_URI']);
 
         if (!$route)
@@ -71,10 +71,10 @@ class Dispatcher
 
             switch($controller->result_code)
             {
-                case BC_REDIRECT:
+                case JF_REDIRECT:
                     $this->redirect($controller);
                 break;
-                case BC_RENDER_VIEW:
+                case JF_RENDER_VIEW:
                 default:
                     $this->renderView($controller);
             }

@@ -1,26 +1,26 @@
 <?php
 /**
- * @package TrevorCore
+ * @package JetFuelCore
  */
  
 /**
  * BlendExecutionHandler provides the ability to intercept and handle error messages from the application.
- * @package TrevorCore
+ * @package JetFuelCore
  */
-class BlendExecutionHandler implements ezcExecutionErrorHandler
+class JFExecutionHandler implements ezcExecutionErrorHandler
 {
     public static function onError( Exception $e = NULL )
     {
 
-        echo BlendExecutionHandler::BuildUserError($e);
+        echo JFExecutionHandler::BuildUserError($e);
 
 
         $mail = new ezcMailComposer();
-        $mail->from = new ezcMailAddress( 'errors@blendinteractive.com', 'Trevor Error Mailer' );
+        $mail->from = new ezcMailAddress( 'errors@blendinteractive.com', 'JetFuel Error Mailer' );
         $mail->addTo( new ezcMailAddress( 'errors@blendinteractive.com', 'Blend Errors' ) );
-        $mail->subject = "Error occured on Juniper";
-        $mail->plainText = BlendExecutionHandler::BuildPlainTextEmail($e);
-        $mail->htmlText = BlendExecutionHandler::BuildEmail($e);
+        $mail->subject = "Error occured on " . $_SERVER['HTTP_HOST'];
+        $mail->plainText = JFExecutionHandler::BuildPlainTextEmail($e);
+        $mail->htmlText = JFExecutionHandler::BuildEmail($e);
 
         $mail->build();
         $transport = new ezcMailMtaTransport();
@@ -109,7 +109,7 @@ class BlendExecutionHandler implements ezcExecutionErrorHandler
     
     private function BuildUserError($e)
     {
-        $message= BlendExecutionHandler::GetUserMessage($e);
+        $message= JFExecutionHandler::GetUserMessage($e);
         return "$message";
     }
 

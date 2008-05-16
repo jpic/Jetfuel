@@ -1,21 +1,21 @@
 <?php
 /**
- * @package TrevorCore
+ * @package JetFuelCore
  */
  
 /**
- * BlendPersistentObject is a helpful base class for persistent database objects.
+ * JFPersistentObject is a helpful base class for persistent database objects.
  * 
- * BlendPersistentObject represents the 'Model' portion of the Model/View/Controller pattern
+ * JFPersistentObject represents the 'Model' portion of the Model/View/Controller pattern
  * This base class is extended by your application's Model objects, and provides a number of 
  * convenience functions to make it easy to manipulate your data via objects.
  *
- * To use it, you create an object that extends BlendPersistenObject, then set variables for 
+ * To use it, you create an object that extends JFPersistenObject, then set variables for 
  * each of the fields in your object (usually, one class represents one table in the database). 
  *
  * <code>
  * <?php
- * class Person extends BlendPersistentObject
+ * class Person extends JFPersistentObject
  * {
  *     public $id=null;
  *     public $name;
@@ -28,32 +28,57 @@
  * 
  * This provides a number of convenience methods that you can use in your controller: 
  * <code>
- *    $people=Person::findAll(array('class'=>'Person')); //Retrieve all Person records
+ *    $people=Person::findAll('Person'); //Retrieve all Person records
  *
- *    $bob=Person::load(2,array('class'=>'Person')); //Retrieve Person record #2
+ *    $bob=Person::load('Person',2); //Retrieve Person record #2
  *
  *    //Create a new Person, tim, and save him to the database.
- *    $tim=Person::createFromArray(array(
+ *    $tim=Person::createFromArray('Person', array(
  *            'name'=>'Tim', 
  *            'email'=>'tim@example.com', 
  *            'phone'=>'123-123-1234', 
- *            'eyeColor'=>'blue'), 'Person'); 
+ *            'eyeColor'=>'blue')); 
  *    $tim->save();
  *
  *    
  * </code>
  * 
- * @package TrevorCore
+ * @package JetFuelCore
  * @abstract
  */
-class BlendPersistentObject
+class JFPersistentObject
 {
 
     public $errors=array();
     public $isValid=null;
     
-    public $relations = array();
-    public $validation = array();
+    
+    /**
+     * The relations array provides an easy way to access related tables as an object graph.
+     *
+     * Example: 
+     * <code>
+     *    public static $relations = array(
+     *       'organization'=>array('class'=>'Organization', 'type'=>'single'),
+     *       'calendars'=>array('class'=>'Calendar'));
+     * </code>
+     */    
+    public static $relations = array();
+    
+    /**
+     * The validations array provides for user-friendly validation of the object before its saved
+     *
+     * Example: 
+     * <code>
+     *    public static $validations = array(
+     *       'name'=>array(
+     *           'type'=>'string',
+     *           'required'=>true,
+     *           'message'=>'Please enter a name.')
+     *   );
+     * </code>
+     */
+    public static $validations = array();
 
     function __construct()
     {
@@ -63,11 +88,11 @@ class BlendPersistentObject
      * createFromArray allows you to create a new database entry by feeding in data from a hash of properties.
      * 
      * <code>
-     * $bob = Person::createFromArray(array(
+     * $bob = Person::createFromArray('Person', array(
      *          'name'=>'Bob Smith',
      *          'email'=>'bob@example.com',
      *          'phone'=>'555-123-1212',
-     *          'eyeColor'=>'green'), 'Person');
+     *          'eyeColor'=>'green'));
      *
      * $bob->save(); //This adds a new record to the database;
      * </code>
@@ -88,27 +113,27 @@ class BlendPersistentObject
      * The controller code to save entries to this form to the database as new records looks like this:
      *
      * <code>
-     * $person = Person::createFromArray($this->parameters['person']);
+     * $person = Person::createFromArray('Person', $this->parameters['person']);
      * $person->save();
      * </code>
      * @param array(string=>mixed) $params
      * @param string $classname
-     * @returns array(BlendPersistentObject)
+     * @returns array(JFPersistentObject)
      */
-    public static function createFromArray($params=array(), $className)
+    public static function createFromArray($className, $params=array())
     {
+
         $object = new $className;
         
         $clz = new ReflectionClass( $className );
         $props = $clz->getProperties();
-
+        
         foreach ($props as $prop)
         {
             $propName = $prop->name;
-//            echo $propName;
             $object->$propName = $params[$propName];
-        } 
-      
+        }   
+
         return $object;
     }
 
@@ -145,17 +170,18 @@ class BlendPersistentObject
      * object containing the data from the specified record.
      *
      * <code>
-     * $person = Person::load(2, array('class'=>'Person'));
+     * $person = Person::load('Person', 2);
      * </code>
      *
      * @param mixed $id The database id of the object to retrieve.
+     * @param string $className A string containing the class name to load (PHP is unable to determine this on its own due to a lack of late static binding)
      * @param array(string=>mixed) $params An array containing a set of key/value pairs to be fed as options. 
-     * There is currently a required parameter of 'class' due to an object limitation in PHP.
-     * @returns BlendPersistentObject
+     * @returns JFPersistentObject
      */
-    public static function load($id,$params=array())
+    public static function load( $className, $id, $params=array())
     {
-        $className = $params['class'];
+
+    
         $dbsession = ezcPersistentSessionInstance::get();
         $object = $dbsession->load($className, $id);
         
@@ -168,24 +194,34 @@ class BlendPersistentObject
      * This function is the equivalent of 'select * from [table]' with no where clause
      *
      * <code>
-     * $people = Person::findAll(array('class'=>'Person'));
+     * $people = Person::findAll('Person');
      * </code>
      *
      * @param array(string=>mixed) $params An array containing a set of key/value pairs to be fed as options. 
-     * There is currently a required parameter of 'class' due to an object limitation in PHP.
-     * @return array(BlendPersistentObject)
+     * @param string $class A string containing the class name to load (PHP is unable to determine this on its own due to a lack of late static binding)
+     * @param array(string=>mixed) $params An array containing a set of key/value pairs to be fed as options. 
+     * Valid parameters include 'orderBy', 'limit', and 'offset'
+     * @return array(JFPersistentObject)
      */
-    public static function findAll($params=array())
+    public static function findAll($class, $params=array())
     {
     //echo "<pre>"; print_r(apd_callstack()); echo "</pre>";
-        $className=$params['class'];
+        if(is_array($class))
+        {
+            $params=$class;
+            $className = $params['class'];
+        }
+        else
+        {
+            $className = $class;
+        }
 
         $dbsession = ezcPersistentSessionInstance::get();
         $q = $dbsession->createFindQuery($className);
         
-        if ($params['orderby'])
+        if ($params['orderBy'])
         {
-            $q->orderBy($params['orderby']);
+            $q->orderBy($params['orderBy']);
         }
         if ($params['limit'] || $params['offset'])
         {
@@ -205,13 +241,15 @@ class BlendPersistentObject
 
 
     /**
+     * findByQuery allows you to retrieve a query object that may be used to define custom queries.
+     *
      * @todo Complete 'includes' option functionality to enable eager association loading.
-     * @param ezcQuery $query A query object, created with {@link createFindQuery}
      * @param string $className The name of the class to query
+     * @param ezcQuery $query A query object, created with {@link createFindQuery}
      * @param array(string=>mixed) $options A set of options to control the behavior of the find.
-     * @return array(BlendPersistentObject)
+     * @return array(JFPersistentObject)
      */
-    public static function findByQuery($query, $className, $options=array())
+    public static function findByQuery( $className, $query, $options=array())
     {
     
         $objects = null;
@@ -332,8 +370,10 @@ class BlendPersistentObject
         $this->errors=array();
         $this->isValid=true;
 
-        $validRules = $this->getValidationRules();
-        
+        $prop = new ReflectionProperty(get_class($this), 'validations');
+        $validRules = $prop->getValue($this);
+
+
         if (!$validRules)
         {
             return true;
@@ -425,23 +465,27 @@ class BlendPersistentObject
     
     public function __get($name)
     {
-        if ($this->relations[$name])
+        $prop = new ReflectionProperty(get_class($this), 'relations');
+        $relations = $prop->getValue($this);
+    //echo "<pre>"; print_r($relations); echo "</pre>";
+
+        if ($relations[$name])
         {
             
             $dbsession = ezcPersistentSessionInstance::get();
 
-            if ($this->relations[$name]['name'])
+            if ($relations[$name]['name'])
             {
-                $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                $q = $dbsession->createRelationFindQuery($this, $relations[$name]['class'], $relations[$name]['name']);
             }
             else
             {
-                $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class']);
+                $q = $dbsession->createRelationFindQuery($this, $relations[$name]['class']);
             }
-
-            if ($this->relations[$name]['orderBy'])
+            
+            if ($relations[$name]['orderBy'])
             {
-                $q->orderBy($this->relations[$name]['orderBy']);
+                $q->orderBy($relations[$name]['orderBy']);
             }
             
             try
@@ -449,11 +493,11 @@ class BlendPersistentObject
             
                 if ($this->relations[$name]['name'])
                 {
-                    $objects = $dbsession->find($q, $this->relations[$name]['class'], $this->relations[$name]['name']);
+                    $objects = $dbsession->find($q, $relations[$name]['class'], $relations[$name]['name']);
                 }
                 else
                 {
-                    $objects = $dbsession->find($q, $this->relations[$name]['class']);
+                    $objects = $dbsession->find($q, $relations[$name]['class']);
                 }
             
             }

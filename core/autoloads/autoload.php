@@ -1,17 +1,13 @@
 <?php
 /** 
- * @package TrevorCore
+ * @package JetFuelCore
  */
 
 global $model;
 $classes=array(
-  'Action'=>'../../core/classes/Action.php',
-  'BlendComponent'=>'../../core/classes/BlendComponent.php',
-  'BlendController'=>'../../core/classes/BlendController.php',
-  'BlendModule'=>'../../core/classes/BlendModule.php',
-  'BlendForm'=>'../../core/classes/BlendForm.php',
-  'BlendPersistentObject'=>'../../core/classes/BlendPersistentObject.php',
-  'BlendRouter'=>'../../core/classes/BlendRouter.php',
+  'JFController'=>'../../core/classes/JFController.php',
+  'JFPersistentObject'=>'../../core/classes/JFPersistentObject.php',
+  'JFRouter'=>'../../core/classes/JFRouter.php',
   'Dispatcher'=>'../../core/classes/Dispatcher.php',
   'CustomDate'=>'../../core/extensions/CustomDate.php',
   'CustomMath'=>'../../core/extensions/CustomMath.php',

@@ -1,15 +1,15 @@
 <?php
 /**
- * BlendRouter.php
- * @package TrevorCore
+ * JFRouter.php
+ * @package JetFuelCore
  */
  
 /**
- * The BlendRouter class is responsible for routing inbound URL's to actions on the 
+ * The JFRouter class is responsible for routing inbound URL's to actions on the 
  * controllers. 
- * @package TrevorCore
+ * @package JetFuelCore
  */
-class BlendRouter
+class JFRouter
 {
     /**
      * The $rules var builds a list of the routing rules
@@ -32,14 +32,9 @@ class BlendRouter
      * @param array $defaults
      * a hash containing default values to assign for elements not provided in the urlPattern
      */
-    public function addRule($urlPattern, $defaults=array(), $method='GET')
+    public function addRule($urlPattern, $defaults=array())
     {
-        $rule = array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
-        if (strtoupper($method) != 'GET')
-        {
-            $rule['method']=strtoupper($method);
-        }
-        $this->rules[]= $rule;
+       $this->rules[]= array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
     }
 
     public function addResource($resourceName, $options=array())
