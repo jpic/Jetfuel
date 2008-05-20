@@ -27,13 +27,12 @@ def main():
 	
 	# Run the two scripts needed to create a model from a database
 	os.system("php core/scripts/createschema.php")
-	os.system("php ezc/trunk/PersistentObjectDatabaseSchemaTiein src/rungenerator.php -s saved-schema.xml -f xml --overwrite app/model/definitions")
+	os.system("echo;")
+	os.system("php ezc/trunk/PersistentObjectDatabaseSchemaTiein/src/rungenerator.php -s saved-schema.xml -f xml --overwrite app/model/definitions")
+	os.system("echo;")
 	
 	# Go back from whence you came!
 	os.chdir(cwd)
-	
-	# PODST doesn't print a blank line so the prompt is annoying :)
-	os.system("echo;")
 
 if __name__ == '__main__':
 	main()
