@@ -15,7 +15,7 @@ def main():
 	# Get the JetFuel directory from the arguments
 	args = sys.argv[1:]
 	if not len(args) == 1:
-		print "usage: create_model.py /path/to/jetfuel"
+		print "usage: create_models.py /path/to/jetfuel"
 		sys.exit(-1)
 	jetfueldir = args[0]
 	
