@@ -155,7 +155,7 @@ class JFPersistentObject
         foreach ($props as $prop)
         {
             $propName = $prop->name;
-			if($params[$propName])
+			if(array_key_exists($propName, $params))
 			{
 				$this->$propName = $params[$propName];
 			}
