@@ -165,7 +165,7 @@ class Dispatcher
         extract($controller->vars);
         ob_start();
         $templateFile = 'views/' . $controller->controller . '/' . $controller->template;
-        include_once(APP_ROOT . '/helpers/application.php');
+        @include_once(APP_ROOT . '/helpers/application.php');
         @include_once(APP_ROOT . '/helpers/' . $controller->controller . '.php');
 
         require(APP_ROOT . '/' . $templateFile . '.php');

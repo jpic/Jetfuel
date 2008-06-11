@@ -449,6 +449,12 @@ class JFPersistentObject
                     case 'boolean':
                     break;
                     case 'string':
+                        if($rules['format'] && !preg_match($rules['format'], $value))
+                        {
+                            $this->isValid=false;
+                            $this->errors[$field]=$rules['message'];
+                            continue;                            
+                        }
                     break;
                 }
             }
