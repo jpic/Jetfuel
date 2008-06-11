@@ -471,7 +471,6 @@ class JFPersistentObject
 
         if ($relations[$name])
         {
-            
             $dbsession = ezcPersistentSessionInstance::get();
 
             if ($relations[$name]['name'])
@@ -487,11 +486,10 @@ class JFPersistentObject
             {
                 $q->orderBy($relations[$name]['orderBy']);
             }
-            
             try
             {
             
-                if ($this->relations[$name]['name'])
+                if ($relations[$name]['name'])
                 {
                     $objects = $dbsession->find($q, $relations[$name]['class'], $relations[$name]['name']);
                 }
@@ -506,7 +504,7 @@ class JFPersistentObject
                 return null;
             }            
             
-            if ($this->relations[$name]['type']=='single')
+            if ($relations[$name]['type']=='single')
             {
                 return $objects[0];
             }

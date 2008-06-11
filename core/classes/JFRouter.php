@@ -39,37 +39,60 @@ class JFRouter
 
     public function addResource($resourceName, $options=array())
     {
+        $identifier = ':id';
+        $groupActions = array();
+        $singleActions = array('edit');
+        
+        $identifier = $options['identifier'] ? $options['identifier'] : $identifier;
+        
+        $groupActions = $options['groupActions'] ? array_merge($groupActions, $options['groupActions']) : $groupActions;
+
+        $singleActions = $options['singleActions'] ? array_merge($singleActions, $options['singleActions']) : $singleActions;
+        
+        
         $this->rules[]= array('pattern'=>"/$resourceName", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'index'),
             'tokens' => array('', "$resourceName"),
             'method' => 'GET');
 
+        foreach($groupActions as $groupAction)
+        {
+            $this->rules[]= array('pattern'=>"/$resourceName/$groupAction", 
+                'defaults' => array('controller'=>$resourceName, 'action'=>$groupAction),
+                'tokens' => array('', "$resourceName", $groupAction));
+        }
+
+
         $this->rules[]= array('pattern'=>"/$resourceName/new", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'newobj'),
             'tokens' => array('', "$resourceName", 'new'));
 
-        $this->rules[]= array('pattern'=>"/$resourceName/:id/edit", 
-            'defaults' => array('controller'=>$resourceName, 'action'=>'edit'),
-            'tokens' => array('', "$resourceName", ':id', 'edit'));
+        $this->rules[]= array('pattern'=>"/$resourceName/$identifier/delete", 
+            'defaults' => array('controller'=>$resourceName, 'action'=>'delete'),
+            'tokens' => array('', "$resourceName", $identifier, 'delete'),
+            'method' => 'POST');        
 
-        $this->rules[]= array('pattern'=>"/$resourceName/:id/delete", 
-            'defaults' => array('controller'=>$resourceName, 'action'=>'destroy'),
-            'tokens' => array('', "$resourceName",':id', "delete"),
-            'method' => 'POST');
+
+        foreach($singleActions as $singleAction)
+        {
+            $this->rules[]= array('pattern'=>"/$resourceName/$identifier/$singleAction", 
+                'defaults' => array('controller'=>$resourceName, 'action'=>$singleAction),
+                'tokens' => array('', "$resourceName", $identifier, $singleAction));        
+        }
 
         $this->rules[]= array('pattern'=>"/$resourceName", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'create'),
             'tokens' => array('', "$resourceName"),
             'method' => 'POST');
 
-        $this->rules[]= array('pattern'=>"/$resourceName/:id", 
+        $this->rules[]= array('pattern'=>"/$resourceName/$identifier", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'show'),
-            'tokens' => array('', "$resourceName",":id"),
+            'tokens' => array('', "$resourceName", $identifier),
             'method' => 'GET');
 
-        $this->rules[]= array('pattern'=>"/$resourceName/:id", 
+        $this->rules[]= array('pattern'=>"/$resourceName/$identifier", 
             'defaults' => array('controller'=>$resourceName, 'action'=>'update'),
-            'tokens' => array('', "$resourceName",":id"),
+            'tokens' => array('', "$resourceName", $identifier),
             'method' => 'POST');
 
 

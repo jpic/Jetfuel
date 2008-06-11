@@ -143,6 +143,12 @@ class JFController
     public $layout = 'default';
     
     /**
+     * $template determines which template file should be called. 
+     * This is typically automatically set to the name of the action that was executed.
+     */
+    public $template = null;
+    
+    /**
      * HTTP Status code that the action call should return.
      * $status_code defines the HTTP Status that will be returned as a result of the request. 
      * Controller actions can decide to override the default 200 (HTTP's OK code) (to return a 404 if 
@@ -235,8 +241,8 @@ class JFController
         $parameters = array_merge($_GET, $_POST, $parameters);
         
         //echo "<pre>"; print_r($parameters); echo "</pre>";
+        $this->template = $action;
 
-        $this->templateFile = 'views/' . $this->controller . '/' . $this->action;
         $this->result_code = JF_RENDER_VIEW;
         
         $this->invokeBeforeFilters($action);

@@ -1,4 +1,12 @@
-<?php class CustomMath implements ezcTemplateCustomFunction
+<?php 
+/**
+ * @package JetFuelCore
+ */
+
+/**
+ * @package JetFuelCore
+ */
+class CustomMath implements ezcTemplateCustomFunction
 {
     public static function getCustomFunctionDefinition( $name )
     {

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package JetFuelCore
+ */
+
 set_include_path( "/var/www/timesheet2008/trevor/ezc/trunk:" . ini_get( "include_path" )  );
 
 require_once('core/common.php');

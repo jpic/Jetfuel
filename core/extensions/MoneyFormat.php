@@ -1,5 +1,11 @@
 <?php 
+/**
+ * @package JetFuelCore
+ */
 
+/**
+ * @package JetFuelCore
+ */
 class MoneyFormat implements ezcTemplateCustomFunction
 {
     public static function getCustomFunctionDefinition( $name )

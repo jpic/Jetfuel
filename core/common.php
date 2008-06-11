@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package JetFuelCore
+ */
+
 //require_once "ezc/Base/base.php";
 //session_set_cookie_params(time() + (86400 * 90));
 
