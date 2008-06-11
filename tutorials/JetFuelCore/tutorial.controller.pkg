@@ -1,0 +1,9 @@
+<refentry id="{@id}">
+    <refnamediv>
+        <refname>Controllers</refname>
+        <refpurpose>Bringing it all together with controllers and actions</refpurpose>
+    </refnamediv>
+    <refsect1 id="{@id setup}">
+        <para>Coming Soon</para>
+    </refsect1>
+</refentry>

@@ -1,0 +1,9 @@
+<refentry id="{@id}">
+    <refnamediv>
+        <refname>Validation</refname>
+        <refpurpose>Making life easy with form validation</refpurpose>
+    </refnamediv>
+    <refsect1 id="{@id setup}">
+        <para>Coming Soon</para>
+    </refsect1>
+</refentry>

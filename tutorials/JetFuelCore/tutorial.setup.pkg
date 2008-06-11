@@ -1,0 +1,21 @@
+<refentry id="{@id}">
+    <refnamediv>
+        <refname>Setting up your environment</refname>
+        <refpurpose>How to set up your app environment for Jetfuel</refpurpose>
+    </refnamediv>
+    <refsect1 id="{@id setup}">
+        <para>At this early stage, the only way to install JetFuel is via Subversion. PEAR and source packages will be available in future releases.</para>
+        <refsect2 id="{@id pear}">
+            <title>Via PEAR</title>
+            <para>Coming Soon</para>
+        </refsect2>
+        <refsect2 id="{@id source}">
+            <title>From a source package</title>
+            <para>Coming Soon</para>
+        </refsect2>
+        <refsect2 id="{@id svn}">
+            <title>From SVN</title>
+            <para>Coming Soon</para>
+        </refsect2>
+    </refsect1>
+</refentry>

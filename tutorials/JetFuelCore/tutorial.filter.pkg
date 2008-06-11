@@ -1,0 +1,9 @@
+<refentry id="{@id}">
+    <refnamediv>
+        <refname>Filters</refname>
+        <refpurpose>Using filters for common actions</refpurpose>
+    </refnamediv>
+    <refsect1 id="{@id setup}">
+        <para>Coming Soon</para>
+    </refsect1>
+</refentry>

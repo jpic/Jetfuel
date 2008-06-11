@@ -1,0 +1,9 @@
+<refentry id="{@id}">
+    <refnamediv>
+        <refname>Views</refname>
+        <refpurpose>Creating your view</refpurpose>
+    </refnamediv>
+    <refsect1 id="{@id setup}">
+        <para>Coming Soon</para>
+    </refsect1>
+</refentry>
