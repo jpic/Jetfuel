@@ -36,7 +36,7 @@ class JFRouter
      */
     public function addRule($urlPattern, $defaults=array(), $method=null)
     {
-        if (is_null($method) || is_empty($method))
+        if (is_null($method) || empty($method))
         {
             $this->rules[]= array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
         }
