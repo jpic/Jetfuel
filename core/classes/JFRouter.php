@@ -31,10 +31,19 @@ class JFRouter
      * a pattern used to define the rule
      * @param array $defaults
      * a hash containing default values to assign for elements not provided in the urlPattern
+     * @param string $method
+     * the method used; valid values are null (no method put in the rule), 'GET', or 'POST'
      */
-    public function addRule($urlPattern, $defaults=array())
+    public function addRule($urlPattern, $defaults=array(), $method=null)
     {
-       $this->rules[]= array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
+        if (is_null($method) || is_empty($method))
+        {
+            $this->rules[]= array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern));
+        }
+        else
+        {
+            $this->rules[]= array('pattern'=>$urlPattern, 'defaults'=>$defaults, 'tokens'=>explode('/', $urlPattern), 'method'=>$method);
+        }
     }
 
     public function addResource($resourceName, $options=array())
