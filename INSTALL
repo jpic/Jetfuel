@@ -1,0 +1,37 @@
+JetFuel Installation
+=====================
+
+Here's the quickest way to get a JetFuel installation up and running quickly. 
+
+1.) Download and uncompress the JetFuel Archive (If you're reading this, you've probably already done this step)
+
+2.) Download the eZ Components release from ezcomponents.org (http://www.ezcomponents.org/download). Uncompress the ezcomponents archive in the jetfuel directory. So your directory structure should look like: 
+
+jetfuel
+    app
+    core
+    ezcomponents-2008.1
+    settings
+
+3.) Modify the settings/environment.php to specify the location of your eZ Components base directory. Set the variables according to the comments in the file.
+
+4.) Configure your database settings in jetfuel/settings/config.ini
+
+5.) Set up your apache configuration to point the website's document root to the jetfuel/app/webroot directory
+
+To Start With a Clean App
+---------------------
+To begin a new, empty app with JetFuel, you can start by auto-generating definition information from your database by cd'ing to your JetFuel directory and running: 
+php core/scripts/createschema.php
+
+To Start With an Example
+---------------------
+To try an example application, you can move or remove the 'jetfuel/app' directory and replace it with one from the 'examples' folder. Also replace the settings/routes.php with the one provided by the example.
+
+for example: 
+
+cd jetfuel
+mv app app_blank
+cp -r examples/blog/app .
+cp examples/blog/settings/routes.php settings
+

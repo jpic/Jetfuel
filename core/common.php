@@ -1,20 +1,17 @@
 <?php
 /**
  * @package JetFuelCore
+ * common.php bootstraps the eZ Components and JetFuel environment.
  */
 
-//require_once "ezc/Base/base.php";
-//session_set_cookie_params(time() + (86400 * 90));
+require_once dirname(__FILE__) . '/../settings/environment.php';
 
-require_once "Base/src/base.php";
+if(defined('EZC_ROOT'))
+{
+	set_include_path( EZC_ROOT . ":" . ini_get( "include_path" )  );
+}
 
-//require_once "settings/config.php";
-
-//require_once "core/classes/Dispatcher.php";
-
-
-
-//require_once('core/classes/Action.php');
+require_once EZC_BASE;
 
 function __autoload( $className )
 {
