@@ -2,7 +2,7 @@ Jetfuel provides an MVC framework for writing organized, maintainable PHP web ap
 
 By leveraging the eZ Components Framework, Jetfuel allows you to focus on writing the application rather than low-level code. The organization and philosophies behind Jetfuel should be very familiar to developers with some exposure to Ruby on Rails.
 
-Jetfuel intends to provide easy-to-use wrappers around many of the powerful features provided by the eZComponents framework.
+Jetfuel intends to provide easy-to-use wrappers around many of the powerful features provided by the eZ Components framework.
 
 Installation
 ====================
