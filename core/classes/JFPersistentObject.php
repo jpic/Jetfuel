@@ -407,7 +407,8 @@ class JFPersistentObject
                 switch($rules['type'])
                 {
                     case 'int':
-                        if(!ctype_digit($value))
+                    case 'integer':
+                        if(!ctype_digit($value) && !is_numeric($value))
                         {
                             $this->isValid=false;
                             $this->errors[$field]=$rules['message'];
