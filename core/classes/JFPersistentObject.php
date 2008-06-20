@@ -427,7 +427,9 @@ class JFPersistentObject
                             continue;
                         }
                     break;
+                    case 'double':
                     case 'float':
+                    case 'real':
                         if(!is_numeric($value))
                         {
                             $this->isValid=false;
@@ -447,6 +449,7 @@ class JFPersistentObject
                             continue;
                         }
                     break;
+                    case 'bool':
                     case 'boolean':
                     break;
                     case 'string':
