@@ -95,7 +95,7 @@
                         </row>
                     </tbody>
                 </tgroup>
-
+            </table>
             
         <para>(For MySQL users, I recommend the create script in examples/blog/example_blog.sql that will create these tables for you and stub in a few sample records.)</para>
         <para>Now that we have our database defined, let's generate the definition files that PersistentObject needs to use these tables. Make sure that you have the correct database settings in settings/config.ini, and in your console, cd to your jetfuel directory and type:</para>
