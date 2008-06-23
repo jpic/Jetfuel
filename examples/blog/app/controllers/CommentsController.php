@@ -13,10 +13,6 @@ class CommentsController extends ApplicationController
         $this->redirect('/posts/' . $comment->post_id . '#' . $comment->id );
     }
     
-    function newobj()
-    {
-    }
-    
     function create()
     {
         $comment = Comment::createFromArray('Comment',$this->parameters['comment']);
@@ -27,16 +23,7 @@ class CommentsController extends ApplicationController
             return;
         }
         $this->vars['comment']=$comment;
-    }
-    
-    function edit()
-    {
-    }
-    
-    function update()
-    {
-    }
-    
+    }  
 }
 
 ?>

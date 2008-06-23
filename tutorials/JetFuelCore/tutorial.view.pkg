@@ -3,7 +3,77 @@
         <refname>Views</refname>
         <refpurpose>Creating your view</refpurpose>
     </refnamediv>
-    <refsect1 id="{@id setup}">
-        <para>Coming Soon</para>
+    <refsect1 id="{@id intro}">
+        <para>Now that we've set up our model and built some simple controllers, let's define what our app is going to look like.</para>
+        <para>The 'view' level of an MVC application defines the presentation of the app, that is, how the app will look to the user. Jetfuel provides two systems for creating views: simple PHP or the eZComponents Template system. Which system is best for your app will depend on your development workflow and who will be designing your application. For this tutorial, we'll be using the php rendering method for simplicity's sake.</para>
+        <para>Jetfuel has a two-step rendering process. First, the view associated with the action is called and the output is stored. Second, the output of the action is sent to a layout that describes the surrounding look and feel of the application.</para>
+    </refsect1>
+    <refsect1 id="{@id basic}">
+        <para>Let's start with the 'home' screen of our app, the post list. View templates are grouped into folders by their associated Controller, and named after their associated action. So go ahead and create a folder in 'app/views' called 'posts', and in it, make a file called'app/views/posts/index.php'. Add this code to the file:</para>
+        <programlisting role="php">
+        <![CDATA[
+<div id="content">
+
+    <h1>Latest Posts</h1>
+
+    <?php foreach($posts as $post): ?>
+
+    <div class="post">
+
+    <h2><a href="/posts/<?=$post->id?>"><?=$post->title?></a></h2>
+    <p><?=$post->summary?></p>
+
+    </div>
+
+    <?php endforeach;?>
+
+</div>
+
+<div id="sidebar">
+
+    <a href="/posts/new">New Post</a>
+
+</div>
+        ]]>
+        </programlisting>
+        <para>The PHP code here is pretty basic, but notice that we have a variable called $posts available in our view. This is because we placed the results of the model's findAll() method into the $this->vars array on to the controller.</para>
+        <para>We also need to set up at least one layout. The layout is a containing template that allows you to provide some markup on the page to surround your actions. This is a good place to set up the top-level HTML page structure.</para>
+        <para>Create a file called 'layouts/default.php', and insert this code:</para>
+        <programlisting role="php">
+        <![CDATA[
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta/>
+<title>Test Blog</title>
+</head>
+<body>
+
+<div id="container">
+<?php echo $result; ?>
+</div>
+</body>
+</html>
+       ]]>
+        </programlisting>      
+        <para>Notice that we're just building a basic page and dropping the $result variable in the middle. In the layout, the output of the view is placed in the $result variable. Also, you can create other layouts by adding more files besides 'default.php' into the layouts folder, and specify them to be used in your controller with the $this->layout variable.</para>
+        <para>At this point, we have at least one working action. Calling up your app in a browser should now return a list of posts (if there are any in the database, that is).</para>
+    </refsect1>
+    <refsect1 id="{@id others}">
+        <para>It's not very convenient to have one title for every page in the app. Fortunately, the view system allows you to pass variables from the action's view template to the layout. Let's add this line to the top of our view (app/views/posts/index.php):</para>
+        <programlisting role="html">
+        <![CDATA[
+<?php $pageTitle = "Latest Posts"; ?>
+        ]]>
+        </programlisting>
+        <para>Now let's swap out the title tag in the layout (layouts/default.php) with this:</para>
+        <programlisting role="html">
+        <![CDATA[
+<title><?php echo $pageTitle; ?></title>
+        ]]>
+        </programlisting>
+        <para>The $pageTitle variable that we defined in the view template is visible to the layout. The layout can also use any of the variables passed from the controller to the view in $this->vars.</para>
+    </refsect1>
+    <refsect1 id="{@id forms}">
     </refsect1>
 </refentry>

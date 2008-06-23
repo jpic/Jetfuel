@@ -4,7 +4,7 @@
  * Routes.php defines how URL's are routed to controller actions within the app
  */
 
- //Default routes. Define after all others
+ //Default route.
  //$route->addRule('/',array('controller'=>'workitem','action'=>'index'));
 
  //$route->addResource('client');

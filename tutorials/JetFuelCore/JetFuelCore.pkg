@@ -1,7 +1,7 @@
 <refentry id="{@id}">
  <refnamediv>
-  <refname>JetFuel Tutorial</refname>
-  <refpurpose>Want to get up to speed quickly with the JetFuel framework? Here's where to start.</refpurpose>
+  <refname>Jetfuel Tutorial</refname>
+  <refpurpose>Want to get up to speed quickly with the Jetfuel framework? Here's where to start.</refpurpose>
  </refnamediv>
  <refsynopsisdiv>
   <author>
@@ -12,17 +12,17 @@
   </author>
  </refsynopsisdiv>
  <refsect1 id="{@id intro}">
-  <title>eZComponents with extra 'eZ'</title>
+  <title>The power of eZComponents, the ease of ready-to-run</title>
   <para>
-      JetFuel grew from a desire to combine the power and flexibility of the {@link http://ezcomponents.org eZComponents libraries} with the rapid web development methodologies and organized framework of {@link http://rubyonrails.com Rails}.
+      Jetfuel grew from a desire to combine the power and flexibility of the {@link http://ezcomponents.org eZComponents libraries} with the rapid web development methodologies and organized framework of {@link http://rubyonrails.com Rails}.
   </para>
   <para>
-      The JetFuel framework is a development methodology and a growing library of wrappers around the eZComponents library emphasizing DRY and ease of use. Users familiar with Ruby on Rails should see immediate parallels between Rails and JetFuel (since JetFuel's model is pretty much a direct lift of Rails' excellent examples).
+      The Jetfuel framework is a development methodology and a growing library of wrappers around the eZComponents library emphasizing DRY and ease of use. Users familiar with Ruby on Rails should see immediate parallels between Rails and Jetfuel (since much of Jetfuel's architecture is a direct lift from Rails' excellent example).
   </para>
  </refsect1>
  <refsect1 id="{@id blog-example}">
      <title>The Obligatory Blog Example</title>
-     <para>To get you started with JetFuel, we'll create a simple blog. I know, not very original, right? Well, there are a couple of advantages to this:
+     <para>To get you started with Jetfuel, we'll create a simple blog. I know, not very original, right? Well, there are a couple of advantages to this:
          <itemizedlist>
              <listitem><para>You probably already know what a blog is, how it should work, and what it should do. We won't need to think too hard about that.</para></listitem>
              <listitem><para>Since it seems like <emphasis>every</emphasis> web framework has a blog example on there, you'll get a nice apples-to-apples comparison if you're shopping for a framework to use.</para></listitem>

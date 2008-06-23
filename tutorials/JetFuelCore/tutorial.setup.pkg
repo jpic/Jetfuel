@@ -3,19 +3,74 @@
         <refname>Setting up your environment</refname>
         <refpurpose>How to set up your app environment for Jetfuel</refpurpose>
     </refnamediv>
-    <refsect1 id="{@id setup}">
-        <para>At this early stage, the only way to install JetFuel is via Subversion. PEAR and source packages will be available in future releases.</para>
-        <refsect2 id="{@id pear}">
+ 
+    <refsect1 id="{@id intro}">
+        <para>There are currently two ways to install Jetfuel: by downloading an archive, or by using subversion.</para>
+        <!-- refsect2 id="">
             <title>Via PEAR</title>
             <para>Coming Soon</para>
+        </refsect2 -->
+        <refsect2 id="{@id download}">
+            <title>Installing from a download:</title>
+            <itemizedlist>
+                <listitem><para>Download and uncompress a Jetfuel download archive (If you're reading this, you've probably already done this step)</para></listitem>
+                <listitem><para>Download the eZ Components release from ezcomponents.org (http://www.ezcomponents.org/download). Uncompress the ezcomponents archive in the jetfuel directory. So your directory structure should look like:</para>
+                    <programlisting>
+<![CDATA[
+jetfuel
+    app
+    core
+    ezcomponents-2008.1
+    settings                
+]]>
+                    </programlisting>        
+                </listitem>
+            </itemizedlist>
         </refsect2>
-        <refsect2 id="{@id source}">
-            <title>From a source package</title>
-            <para>Coming Soon</para>
+        <refsect2 id="{@id fromsvn}">
+            <title>Installing from SVN:</title>
+            <itemizedlist>
+                <listitem><para>Check out the Jetfuel source code:</para>
+                    <programlisting>
+                <![CDATA[
+svn co http://jetfuel.googlecode.com./svn/branches/0.3.1 jetfuel                
+                ]]>
+                    </programlisting>
+                </listitem>
+                <listitem><para>Download the eZ Components release from ezcomponents.org (http://www.ezcomponents.org/download). Uncompress the ezcomponents archive in the jetfuel directory. So your directory structure should look like:</para>
+                    <programlisting>
+                <![CDATA[
+jetfuel
+    app
+    core
+    ezcomponents-2008.1
+    settings                
+                ]]>
+                    </programlisting>        
+                </listitem>
+            </itemizedlist>
         </refsect2>
-        <refsect2 id="{@id svn}">
-            <title>From SVN</title>
-            <para>Coming Soon</para>
-        </refsect2>
+    </refsect1>
+    <refsect1 id="{@id configurejf}">
+        <title>Configuring Jetfuel</title>
+        <itemizedlist>
+            <listitem>Modify the settings/environment.php to specify the location of your eZ Components base directory. Set the variables according to the comments in the file.</listitem>
+            <listitem>Configure your database settings in jetfuel/settings/config.ini</listitem>
+            <listitem>Set up your apache configuration to point the website's document root to the jetfuel/app/webroot directory</listitem>
+        </itemizedlist>
+        <para>For the tutorial, we'll be starting with an empty app, so nothing else is required. However, if you don't want to actually type out the tutorial and would prefer to look at the completed code instead, it's in the examples/blog folder. To install it, you can remove the current jetfuel/app directory and replace it with the example code like so:</para>
+
+        <programlisting>
+        <![CDATA[
+cd jetfuel
+mv app app_blank
+cp -r examples/blog/app .
+cp examples/blog/settings/routes.php settings        
+        ]]>
+        </programlisting>        
+        
+    </refsect1>
+    <refsect1 id="{@id conclusion}">
+        <para>Now we're ready to write an app! First, we'll take a look at creating a model.</para>
     </refsect1>
 </refentry>

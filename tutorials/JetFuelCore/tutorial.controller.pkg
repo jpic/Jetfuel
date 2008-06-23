@@ -1,9 +1,214 @@
 <refentry id="{@id}">
     <refnamediv>
         <refname>Controllers</refname>
-        <refpurpose>Bringing it all together with controllers and actions</refpurpose>
+        <refpurpose>Writing the logic for our app</refpurpose>
     </refnamediv>
-    <refsect1 id="{@id setup}">
-        <para>Coming Soon</para>
+    <refsect1 id="{@id intro}">
+        <para>Now that we've got a model ready to go, let's put it to use.</para>
+        <para>The controllers in Jetfuel are the parts of the app that actually do the work. If you like, think of your Model classes as nouns, and your Controller classes as verbs. (I guess the would make the views calligraphy, but we'll get to that in a bit.)</para>
+        <para>The controller classes are stored in the app/controllers folder. There's one file per controller, named [controller name]Controller.php.</para>
+        <para>A controller class is mostly a container for <strong>actions</strong>. Actions are defined as functions on the controller. These are the bits of code that actually do the work when they're called by URLs. Let's create a couple of controllers for our blog app.</para>
+    </refsect1>
+    <refsect1 id="{@id creating}">
+        <title>Creating the Controller</title>
+        <refsect2 id="{@id jfindex}">
+            <para>Go ahead and create a new file in app/controllers called 'PostsController.php' (note the plural there). Add this bit of code to the file:</para>
+            <programlisting role="php">
+    <![CDATA[
+<?php
+require_once(APP_ROOT . '/models/Post.php');
+require_once(APP_ROOT . '/models/Comment.php');
+class PostsController extends JFController
+{
+    function index()
+    {
+        $this->vars['posts']=Post::findAll('Post',array('orderBy'=>'created_at desc'));
+    }
+}
+?> 
+    ]]>
+            </programlisting>
+            <para>Let's take a close look at what we've done here:</para>
+            <itemizedlist>
+                <listitem><para>We've included the two Model classes we just made</para></listitem> 
+                <listitem><para>We've created a new class called PostsController that inherits some functionality from JFController.</para></listitem>
+                <listitem><para>We've defined a new function called 'index'. When index() is called, we'll run the findAll() method on our Post model class, which will return an array of Post objects. Then we'll assign those Post objects to an element in the $this->vars array with a key of 'posts'.</para></listitem>
+            </itemizedlist>
+            <para>When a user requests a URL, the right Controller for that URL is instantiated, and then the right action is invoked (we'll get to figuring out what's "right" shortly). The controller performs some action, and can then pass data to the view by storing the data as a hash in $this->vars. Anything stored in this attribute will be made available from the view.</para>
+        </refsect2>
+        <refsect2 id="{@id jfshow}">
+            <para>So what about data coming in from the user? We'll need another example for that. Add this function to your PostsController:</para>
+            <programlisting role="php">
+            <![CDATA[
+function show()
+{
+    $this->vars['post']=Post::load('Post',$this->parameters['id']);
+}        
+            ]]>
+            </programlisting>
+            <para>This 'show' action is similar to index(). We're retrieving a Post object and assigning it to the $this->vars array for the View to use. But now we're pulling a single record based on an 'id' value passed in from the HTTP request.</para>
+            <para>The $this->parameters array will contain all of the information passed in from the user. It's built from a combination of the querystring parameters, the POST variables, and any relevant portions of the URL.</para>
+        </refsect2>
+        <refsect2 id="{@id others}">
+            <para>Let's finish out our PostsController with a few more functions:</para>
+            <programlisting role="php">
+            <![CDATA[
+
+function create()
+{
+    $post = Post::createFromArray('Post',$this->parameters['post']);
+
+    if($post->save())
+    {
+        $this->redirect("/posts/$post->id");
+        return;
+    }
+    $this->vars['post']=$post;
+    $this->template='newobj';
+}
+
+function newobj()
+{
+}
+
+function edit()
+{
+    $this->vars['post']=Post::load('Post',$this->parameters['id']);    
+}
+
+function update()
+{
+    $post = Post::load('Post',$this->parameters['id']);
+    $post->updateAttributes($this->parameters['post']);
+    if($post->save())
+    {
+        $this->redirect('/posts/' + $post->id);
+        return;
+    }
+    $this->vars['post']=$post;
+    $this->template='edit';
+}
+
+function delete()
+{
+    $post = Post::load('Post',$this->parameters['id']);
+
+    if($post)
+    {
+        $post->delete();
+    }
+
+    $this->redirect('/posts');
+
+}
+            ]]>
+            </programlisting>
+            <para>Now we've filled out the rest of our PostsController functions. We have all of the functions needed to create, read, update, and delete record (often referred to as 'CRUD' operations). Let's examine these new functions briefly:</para>
+            
+            <itemizedlist>
+                <listitem><para>create() receives form input to create a new blog post. Notice that it uses the createFromArray method on the Post model class to fill in the object from $this->parameters['post']. As we'll see when we look at the views, if we create our form variables with names like "post[title]", PHP will convert those into hashed arrays automatically so that we don't have to.</para>
+                    <para>We then try to save the post. If the save() method returns true, the post was saved and the operation was successful. The user is redirected to the detail view of the new post. If it fails, then the post is placed in the vars for use by the view, and the 'newobj' template is loaded instead.</para>
+                </listitem>
+                <listitem><para>newobj() is an empty function used to create a new form. Since we don't need any data to make an empty form, we don't need to do anything in the action.</para></listitem>
+                <listitem><para>edit() loads a post from the database to populate an edit form. It does so based on the 'id' parameter in the input.</para></listitem>
+                <listitem><para>update() loads a post from the database (specified by the 'id' parameter) and calls updateAttributes() on the post to update the post's attributes based on form input. For saving the post, update() uses the same 'redirect or re-display the form' approach that we used on the create() action.</para></listitem>
+            </itemizedlist>
+            
+            <para>Now let's get a controller set up for our comments. For our blog, the comments and the 'add a comment' form will appear beneath the post. So we really just need our comments controller to create new posts for us.</para>
+            <para>Create a file in the 'app/controllers' directory called 'CommentsController.php', and add this code:</para>
+
+            <programlisting role="php">
+            <![CDATA[
+<?php
+
+class CommentsController extends JFController
+{
+    function index()
+    {
+        $this->redirect('/posts');
+    }
+
+    function show()
+    {
+        $comment = Comment::load('Comment',$this->parameters['id']);
+        $this->redirect('/posts/' . $comment->post_id . '#' . $comment->id );
+    }
+
+    function create()
+    {
+        $comment = Comment::createFromArray('Comment',$this->parameters['comment']);
+
+        if($comment->save())
+        {
+            $this->redirect('/posts/' . $comment->post_id);
+            return;
+        }
+        $this->vars['comment']=$comment;
+    }  
+}
+
+?>            
+            ]]>
+            </programlisting>
+            <para>We've got three functions here:</para>
+            <itemizedlist>
+                <listitem><para>The index() function redirects to the posts (doesn't make much sense to list comments bt themselves)</para></listitem>
+                <listitem><para>The show() function retrieves a comment, but instead of displaying it, redirects to the post associated with the comment.</para></listitem>
+                <listitem><para>The create() function creates a new comment, similar to the create() function on the PostsController</para></listitem>
+            </itemizedlist>
+        </refsect2>
+    </refsect1>
+    <refsect1 id="{@id routing}">
+        <para>Now we have our controllers, but we still need to find a way to map URL's entered by the user to actions on our controllers. How can we route the requests to the right methods?</para>
+        <para>This is done through a mapping file in your settings folder named 'routes.php'. By default, it contains these lines (ignoring the comments):</para>
+        <programlisting role="php">
+        <![CDATA[
+$route->addRule('/:controller/:action/:id');
+$route->addRule('/:controller/:action');
+$route->addRule('/:controller',array('action'=>'index'));
+        ]]>
+        </programlisting>
+
+        <para>The routes.php file specifies what parts of the request URL contain information on what controller and action the request should go to. The rules are read in the order they're specified, so you'll want to put the more specific rules first.</para>
+        <para>The three default rules define a simple URL structure to map your actions and classes. Let's look at how these existing rules affect our app.</para>
+        <itemizedlist>
+            <listitem><para>The '/:controller/:action/:id' rule means that a URL like '/posts/show/12' will call show() on our PostsController with an id of '12' in the input parameters.</para></listitem>
+            <listitem><para>The '/:controller/:action' rule means that a URL like '/posts/newobj' will call newobj() on our PostsController.</para></listitem>
+            <listitem><para>The '/:controller' rule means that a URL like '/posts' will call the index() action on our PostsController.</para></listitem>
+        </itemizedlist>
+        <para>When you define a rule, the first parameter is a tokenized string indicating the input parameters that are defined in the URL. The (optional) second parameter lets us specify values for parameters that might not be specified in the URL. In the third rule above, the '/posts' URL doesn't say 'index' anywhere in it, but we set it in the addRule call.</para>
+        <para>This default set of rules gives us a good base to start most apps. We should add at very least one more rule, to tell Jetfuel what to do if the user doesn't give us anything at all. Add this line above the other rules:</para>
+        <programlisting role="php">
+        <![CDATA[
+$route->addRule('/',array('controller'=>'posts', 'action'=>'index'));
+        ]]>
+        </programlisting>
+        <para>So if a user just enters the domain name for our app, he'll get our list of posts.</para>
+        <para>This system gives you a lot of options for configuring URL's. It also provides an additional convenience method for setting up RESTful URL structures. Let's use this for our app. Let's add two more lines to our routes.php file:</para>
+        <programlisting role="php">
+        <![CDATA[
+$route->addRule('/',array('controller'=>'posts','action'=>'index'));
+
+$route->addResource('posts');
+$route->addResource('comments');
+
+$route->addRule('/:controller/:action/:id');
+$route->addRule('/:controller/:action');
+$route->addRule('/:controller',array('action'=>'index'));
+        ]]>
+        </programlisting>
+        <para>We added two calls to 'addResource()'. This is a method that sets up a number of rules to configure your controller for RESTful CRUD operations. It relies some standard naming of the actions on the controller. By sheer coincidence, we just happen to be using those standard names for our controllers in this tutorial. Here's what the URLs for our PostsController will look like now that we've mapped them with addResources():</para>
+        <itemizedlist>
+            <listitem><para>'/posts' will go to PostsController->index()</para></listitem>
+            <listitem><para>'/posts/new' will go to PostsController->newobj()</para></listitem>
+            <listitem><para>Sending an HTTP POST request to '/posts' will go to PostsController->create()</para></listitem>
+            <listitem><para>'/posts/12' will go to PostsController->show() with an id of 12</para></listitem>
+            <listitem><para>'/posts/12/edit' will go to PostsController->edit() with an id of 12</para></listitem>
+            <listitem><para>Sending an HTTP POST request to '/posts/12' will go to PostsController->update() with an id of 12</para></listitem>
+            <listitem><para>'/posts/12/delete' will go to PostsController->delete() with an id of 12</para></listitem>
+        </itemizedlist>
+        <para>So now we have a nice, clean URL structure for our app with a minimum of effort. Next, we'll wrap things up by defining what our app should look like.</para>
+        
+        
     </refsect1>
 </refentry>
