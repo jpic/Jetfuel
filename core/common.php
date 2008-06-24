@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/../settings/environment.php';
 
 if(defined('EZC_ROOT'))
 {
-	set_include_path( EZC_ROOT . ":" . ini_get( "include_path" )  );
+	set_include_path( EZC_ROOT . ":" . EZC_ROOT . "/trunk:" . ini_get( "include_path" )  );
 }
 
 require_once EZC_BASE;
