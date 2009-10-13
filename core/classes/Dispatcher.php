@@ -20,7 +20,7 @@ class Dispatcher
 {
     /**
      * An array of all active modules, in the 
-     order that they should be evaluated.
+     * order that they should be evaluated.
      * 
      * @var array(BlendModule)
      * @access protected
@@ -161,17 +161,24 @@ class Dispatcher
     }
     
     protected function renderViewPhp($controller)
-    {//echo "[[$controller->templateFile]]";
+    {
         extract($controller->vars);
         ob_start();
         $templateFile = 'views/' . $controller->controller . '/' . $controller->template;
         @include_once(APP_ROOT . '/helpers/application.php');
         @include_once(APP_ROOT . '/helpers/' . $controller->controller . '.php');
 
-        require(APP_ROOT . '/' . $templateFile . '.php');
+        if(!@include(APP_ROOT . '/' . $templateFile . '.php'))
+        {
+            echo "Template not found: " . APP_ROOT . '/' . $templateFile . ".php";
+        }
         $result=ob_get_clean();
         
-        require(APP_ROOT . '/layouts/' . $controller->layout . '.php');
+        if(!@include(APP_ROOT . '/layouts/' . $controller->layout . '.php'))
+        {
+            echo "Layout not found: " . APP_ROOT . '/layouts/' . $controller->layout . '.php';
+            echo $result;
+        }        
     }
     
     protected function renderViewTemplate($controller)

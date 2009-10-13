@@ -275,7 +275,7 @@ class JFPersistentObject
         }
         else
         {
-            return $objects[0];
+            return array_shift($objects);
         }
         
     }
@@ -516,57 +516,12 @@ class JFPersistentObject
             
             if ($relations[$name]['type']=='single')
             {
-                return $objects[0];
+                return array_shift($objects);
             }
             else
             {
                 return $objects;
             }
-            
-            /*
-            if ($this->relations[$name]['type']=='single')
-            {
-                try
-                {
-                    if ($this->relations[$name]['name'])
-                    {
-                    
-                        $q = $dbsession->createRelationFindQuery($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
-                        
-                        
-                        $object = $dbsession->getRelatedObject($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
-                    }
-                    else
-                    {
-                        $object = $dbsession->getRelatedObject($this, $this->relations[$name]['class']);
-                    }
-                }
-                catch (ezcPersistentRelatedObjectNotFoundException $e)
-                {
-                    return null;
-                }
-                return $object;
-                
-            }
-            else
-            {
-                try 
-                {
-                    if ($this->relations[$name]['name'])
-                    {
-                        $objects = $dbsession->getRelatedObjects($this, $this->relations[$name]['class'], $this->relations[$name]['name']);
-                    }
-                    else
-                    {
-                        $objects = $dbsession->getRelatedObjects($this, $this->relations[$name]['class']);
-                    }                }
-                catch (ezcPersistentRelatedObjectNotFoundException $e)
-                {
-                    return array();
-                }
-                return $objects;
-            }
-                */
 
         }
         $clz = new ReflectionClass( get_class($this) );
@@ -575,7 +530,6 @@ class JFPersistentObject
         {
             $method = $clz->getMethod("get_$name");
             return $method->invoke($this);
-            //return $this->get_$name();
         }
         
     }    
