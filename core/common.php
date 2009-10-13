@@ -16,6 +16,7 @@ require_once EZC_BASE;
 function __autoload( $className )
 {
     ezcBase::autoload( $className );
+    @include(SITE_ROOT . '/app/model/' . $className . '.php');    
 }
 
 define('SITE_ROOT', dirname(__FILE__) . '/..');
