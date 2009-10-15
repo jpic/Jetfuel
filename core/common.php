@@ -6,6 +6,7 @@
 
 require_once dirname(__FILE__) . '/../settings/environment.php';
 
+
 if(defined('EZC_ROOT'))
 {
 	set_include_path( EZC_ROOT . ":" . EZC_ROOT . "/trunk:" . ini_get( "include_path" )  );
@@ -21,6 +22,7 @@ function __autoload( $className )
 
 define('SITE_ROOT', dirname(__FILE__) . '/..');
 define('APP_ROOT', dirname(__FILE__) . '/../app');
+
 
 
 $cfg = ezcConfigurationManager::getInstance();
@@ -43,6 +45,7 @@ define('DB_DSN', $dsn);
 $dbInstance = ezcDbFactory::create( DB_DSN );
 ezcDbInstance::set( $dbInstance );
 
+@include_once SITE_ROOT . '/settings/log.php';
 //require_once "settings/log.php";
 
 
