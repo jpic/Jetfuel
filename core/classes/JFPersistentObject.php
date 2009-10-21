@@ -181,12 +181,50 @@ class JFPersistentObject
     public static function load( $className, $id, $params=array())
     {
 
-    
         $dbsession = ezcPersistentSessionInstance::get();
-        $object = $dbsession->load($className, $id);
-        
+		
+		if($params['include'])
+		{
+			$relationDef = self::buildRelationGraph($params['include']);
+
+			$object = $dbsession->loadWithRelatedObjects($className, $id, $relationDef);
+			
+		}
+		else
+		{
+        	$object = $dbsession->load($className, $id);
+		}
+		
         return $object;
     }
+	
+	protected static function buildRelationGraph($includes, $depth = 0, $idx = 0)
+	{
+	    //TODO Handle Named Relations
+	    
+		$includes = explode(',', $includes);
+		
+		$relationDef = array();
+		foreach($includes as $include)
+		{
+			$include = trim($include);
+			
+			$deeperDef = array();
+			//If this is a deeper-level relation, recurse into it
+			if(strpos($include, '/'))
+			{
+				$includeParts = explode('/', $include);
+				$include = array_shift($includeParts);
+				
+				$deeperDef = self::buildRelationGraph(implode('/', $includeParts), $depth+1, $idx);
+			}
+			
+			$relationDef['r' . $idx . '_' . $depth]=new ezcPersistentRelationFindDefinition($include, null, $deeperDef);
+			$idx++;
+		}
+		
+		return $relationDef;
+	}
     
     /**
      * findAll retrieves an array containing every object in a given model.
@@ -473,56 +511,63 @@ class JFPersistentObject
         $dbsession->delete($this);
     }
     
-    public function __get($name)
-    {
-        $prop = new ReflectionProperty(get_class($this), 'relations');
-        $relations = $prop->getValue($this);
-    //echo "<pre>"; print_r($relations); echo "</pre>";
-
-        if ($relations[$name])
+	protected function getRelatedObjects($relation)
+	{
+        $dbsession = ezcPersistentSessionInstance::get();
+        
+        if ($relation['orderBy']) //If no orderBy is used, we can use preloaded objects
         {
-            $dbsession = ezcPersistentSessionInstance::get();
-
-            if ($relations[$name]['name'])
+            $objects = $dbsession->getRelatedObjects($this, $relation['class'], $relation['name']);
+        }
+        else
+        {
+            if ($relation['name'])
             {
-                $q = $dbsession->createRelationFindQuery($this, $relations[$name]['class'], $relations[$name]['name']);
+                $q = $dbsession->createRelationFindQuery($this, $relation['class'], $relation['name']);
             }
             else
             {
-                $q = $dbsession->createRelationFindQuery($this, $relations[$name]['class']);
+                $q = $dbsession->createRelationFindQuery($this, $relation['class']);
             }
+
+            $q->orderBy($relation['orderBy']);
             
-            if ($relations[$name]['orderBy'])
-            {
-                $q->orderBy($relations[$name]['orderBy']);
-            }
             try
             {
-            
-                if ($relations[$name]['name'])
+                if ($relation['name'])
                 {
-                    $objects = $dbsession->find($q, $relations[$name]['class'], $relations[$name]['name']);
+                    $objects = $dbsession->find($q, $relation['class'], $relation['name']);
                 }
                 else
                 {
-                    $objects = $dbsession->find($q, $relations[$name]['class']);
+                    $objects = $dbsession->getRelatedObjects($this, $relation['class']);
                 }
-            
             }
             catch (ezcPersistentRelatedObjectNotFoundException $e)
             {
                 return null;
             }            
-            
-            if ($relations[$name]['type']=='single')
-            {
-                return array_shift($objects);
-            }
-            else
-            {
-                return $objects;
-            }
+        }
 
+        if ($relation['type']=='single')
+        {
+            return array_shift($objects);
+        }
+        else
+        {
+            return $objects;
+        }
+		
+	}
+	
+    public function __get($name)
+    {
+        $prop = new ReflectionProperty(get_class($this), 'relations');
+        $relations = $prop->getValue($this);
+
+        if ($relations[$name])
+        {
+			return $this->getRelatedObjects($relations[$name]);
         }
         $clz = new ReflectionClass( get_class($this) );
 

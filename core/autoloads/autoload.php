@@ -3,10 +3,10 @@
  * @package JetFuelCore
  */
 
-global $model;
 $classes=array(
   'JFController'=>'../../core/classes/JFController.php',
   'JFPersistentObject'=>'../../core/classes/JFPersistentObject.php',
+  'JFPersistentDefinitionManager'=>'../../core/classes/JFPersistentDefinitionManager.php',
   'JFRouter'=>'../../core/classes/JFRouter.php',
   'Dispatcher'=>'../../core/classes/Dispatcher.php',
   'CustomDate'=>'../../core/extensions/CustomDate.php',
@@ -16,11 +16,5 @@ $classes=array(
   'ApplicationController'=>'../../app/controllers/ApplicationController.php'
 );
 
-/*
-foreach($model as $modelClass)
-{
-  $classes[$modelClass]='app/model/' . $modelClass . '.php';
-}
-*/
 return $classes;
 ?>

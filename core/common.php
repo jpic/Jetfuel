@@ -31,6 +31,8 @@ $cfg->init('ezcConfigurationIniReader', SITE_ROOT . '/settings');
 
 define('DIR_DEFINITIONS', SITE_ROOT . '/app/model/definitions');
 
+ezcBase::addClassRepository( '.', SITE_ROOT . '/core/autoloads' );
+
 
 $driver = $cfg->getSetting('config','Database','Driver');
 $host = $cfg->getSetting('config','Database','Host');
@@ -46,15 +48,20 @@ $dbInstance = ezcDbFactory::create( DB_DSN );
 ezcDbInstance::set( $dbInstance );
 
 @include_once SITE_ROOT . '/settings/log.php';
-//require_once "settings/log.php";
 
-
-$session = new ezcPersistentSession( $dbInstance,
+/*
+$dbSession = new ezcPersistentSession( $dbInstance,
         new ezcPersistentCacheManager( new ezcPersistentCodeManager( DIR_DEFINITIONS ) ) );
+*/
+$dbSession = new ezcPersistentSession( $dbInstance,
+        new ezcPersistentCacheManager( new JFPersistentDefinitionManager() ) );
+
+$identityMap = new ezcPersistentBasicIdentityMap($dbSession->definitionManager);
+
+$session = new ezcPersistentSessionIdentityDecorator($dbSession, $identityMap);
         
 ezcPersistentSessionInstance::set( $session ); // set default session
  
-ezcBase::addClassRepository( '.', SITE_ROOT . '/core/autoloads' );
 // retrieve the session
 //$session = ezcPersistentSessionInstance::get();
 ?>
